@@ -1,5 +1,24 @@
 const databaseConnection = require('./database/db_connection');
 
+const queriesRunner = (queries, cb) => {
+    const query = queries.shift();
+    if (query) {
+      if (Array.isArray(query)) {
+        databaseConnection.query(query[0], query[1], (err, res) => {
+          if (err) throw err;
+          queriesRunner(queries, cb);
+        });
+      } else {
+        databaseConnection.query(query, (err, res) => {
+          if (err) throw err;
+          queriesRunner(queries, cb);
+        });
+      }
+    } else {
+      cb();
+    }
+  };
+
 const createUser = (name) => {
     databaseConnection.query(`INSERT INTO users(name) VALUES ('${name}');`, (err, res) => {
         if (err) {
@@ -73,16 +92,20 @@ const getOwnership = (cb) => {
 
 const buyItem = (user_name, item_name, cb) => {
     item_name = decodeURI(item_name);
-    const dbQuery = `UPDATE users SET gold_pieces = gold_pieces - (SELECT item_price from inventory WHERE item_name = '${item_name}'), name = '${user_name}';
-    UPDATE inventory SET item_quantity = item_quantity - 1 WHERE item_name = '${item_name}';
-    INSERT INTO ownership(owner_id, item_id)
-    VALUES ((SELECT id FROM users WHERE name = '${user_name}' LIMIT 1), (SELECT id FROM inventory WHERE item_name = '${item_name}' LIMIT 1));`
-    databaseConnection.query(dbQuery, (err, res) => {
-        if (err) cb(err)
-        else {
-            cb(null)
-        }
-    })
+    const queries = [
+        "BEGIN;",
+        [ "UPDATE users SET gold_pieces = gold_pieces - (SELECT item_price from inventory WHERE item_name = $1), name = $2;",
+          [item_name, user_name]
+        ],
+        [ "UPDATE inventory SET item_quantity = item_quantity - 1 WHERE item_name = $1;",
+          [item_name]
+        ],
+        ["INSERT INTO ownership(owner_id, item_id) VALUES ((SELECT id FROM users WHERE name = $1 LIMIT 1), (SELECT id FROM inventory WHERE item_name = $1 LIMIT 1));",
+          [user_name]
+        ],
+        "COMMIT;"
+      ];
+      queriesRunner(queries,cb);
 }
 
 // UPDATE users SET gold_pieces = gold_pieces - 1 WHERE name = {1};
