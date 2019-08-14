@@ -52,14 +52,19 @@ const handleDbNewUser = (request, response) => {
         if (res.length > 0) {
           // user DOES exist
           userExists = "True";
+          console.log(`Does the user exist?`, userExists);
+          response.writeHead(302, { Location: "/" });
+          response.end(userExists);
         } else if (res.length === 0) {
           // user DOESN'T exist
-          userExists = "False";
+          // userExists = "False";
+          queries.createUser(userName);
+          console.log('User doesnt exist', userName);
+          response.writeHead(301, { Location: "/public/inventory.html" });
+          response.end();
         }
       }
-      console.log(`Does the user exist?`, userExists);
-      response.writeHead(301, { Location: "/public/inventory.html" });
-      response.end(userExists);
+
     });
   });
 };
