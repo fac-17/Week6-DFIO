@@ -43,6 +43,7 @@ const handlePublic = (request, response) => {
 const handleDbNewUser = (request, response) => {
   dataStreamer(request, (data) => {
     userName = data.split("=")[1];
+    console.log('username in handleDbNewUser',userName);
     queries.createUser(userName)
     response.writeHead(301, { Location: '/public/inventory.html' })
     response.end()
@@ -72,11 +73,13 @@ const handleDbLogin = (request, response) => {
 
 const handleBuyItem = (request, response) => {
   const itemToBuy = request.url.split('?')[1];
+  console.log('userName in handleBuyItem', userName);
   queries.buyItem(userName, itemToBuy, (err, itemsOwned) => {
     if (err) console.log(err);
     queries.getItemsOwnedBy(userName, (err, itemsOwned) => {
       if (err) console.log(err);
       itemsOwned = JSON.stringify(itemsOwned);
+      // console.log(itemsOwned);
       response.writeHead(200, { "Content-Type": "application/json" });
       response.end(itemsOwned);
     })
@@ -85,6 +88,7 @@ const handleBuyItem = (request, response) => {
 
 const handleGetUser = (request, response) => {
   queries.getUserData(userName, (err, res) => {
+    console.log('username in getUser',userName);
     if (err) console.log(err);
     userData = JSON.stringify(res);
     response.writeHead(200, { "Content-Type": "application/json" });
