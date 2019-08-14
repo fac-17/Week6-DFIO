@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const querystring = require("querystring");
 const dataStreamer = require("./helper").dataStreamer;
-const queries = require('./queries');
+const queries = require("./queries");
 let userName;
 
 const handleHome = (request, response) => {
@@ -26,9 +26,9 @@ const handlePublic = (request, response) => {
     css: "text/css",
     js: "application/javascript",
     ico: "image/x-icon"
-  }
+  };
 
-  const filePath = path.join(__dirname, "..", request.url)
+  const filePath = path.join(__dirname, "..", request.url);
   fs.readFile(filePath, (error, file) => {
     if (error) {
       response.writeHead(500, { "content-type": "text/html" });
@@ -36,37 +36,33 @@ const handlePublic = (request, response) => {
     } else {
       response.writeHead(200, { "content-type": extensionType[extension] });
       response.end(file);
-    };
+    }
   });
 };
 
 const handleDbNewUser = (request, response) => {
-  dataStreamer(request, (data) => {
+  let userExists = "";
+  dataStreamer(request, data => {
     userName = data.split("=")[1];
-    console.log('username in handleDbNewUser',userName);
+    console.log("username in handleDbNewUser", userName);
 
     queries.checkExistingUsers(userName, (err, res) => {
       if (err) console.log(err);
       else {
         if (res.length > 0) {
-          // user DOESNT exist
-          queries.createUser(userName)
+          // user DOES exist
+          userExists = "True";
+        } else if (res.length === 0) {
+          // user DOESN'T exist
+          userExists = "False";
         }
-        else if (res.length === 0) {
-          // user EXISTS
-
-        };
       }
-
-
+      console.log(`Does the user exist?`, userExists);
+      response.writeHead(301, { Location: "/public/inventory.html" });
+      response.end(userExists);
     });
-
-    response.writeHead(301, { Location: '/public/inventory.html' })
-    response.end()
-  })
-}
-
-
+  });
+};
 
 const handleGetInventory = (request, response) => {
   queries.getInventory((err, res) => {
@@ -76,20 +72,20 @@ const handleGetInventory = (request, response) => {
       response.writeHead(200, { "Content-Type": "application/json" });
       response.end(inventoryArray);
     }
-  })
-}
+  });
+};
 
 const handleDbLogin = (request, response) => {
-  dataStreamer(request, (data) => {
-    response.writeHead(301, { Location: '/public/inventory.html' })
+  dataStreamer(request, data => {
+    response.writeHead(301, { Location: "/public/inventory.html" });
     userName = data.split("=")[1];
-    response.end()
-  })
-}
+    response.end();
+  });
+};
 
 const handleBuyItem = (request, response) => {
-  const itemToBuy = request.url.split('?')[1];
-  console.log('userName in handleBuyItem', userName);
+  const itemToBuy = request.url.split("?")[1];
+  console.log("userName in handleBuyItem", userName);
   queries.buyItem(userName, itemToBuy, (err, itemsOwned) => {
     if (err) console.log(err);
     queries.getItemsOwnedBy(userName, (err, itemsOwned) => {
@@ -98,9 +94,9 @@ const handleBuyItem = (request, response) => {
       // console.log(itemsOwned);
       response.writeHead(200, { "Content-Type": "application/json" });
       response.end(itemsOwned);
-    })
-  })
-}
+    });
+  });
+};
 
 const handleGetUser = (request, response) => {
   queries.getUserData(userName, (err, res) => {
@@ -109,11 +105,15 @@ const handleGetUser = (request, response) => {
     userData = JSON.stringify(res);
     response.writeHead(200, { "Content-Type": "application/json" });
     response.end(userData);
+  });
+};
 
-  })
-}
-
-
-
-
-module.exports = { handleHome, handlePublic, handleDbNewUser, handleGetInventory, handleDbLogin, handleGetUser, handleBuyItem };
+module.exports = {
+  handleHome,
+  handlePublic,
+  handleDbNewUser,
+  handleGetInventory,
+  handleDbLogin,
+  handleGetUser,
+  handleBuyItem
+};
