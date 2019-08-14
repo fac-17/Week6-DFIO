@@ -10,17 +10,22 @@
 </head>
 <body>
   <h1>FINAL FACTASY<h1>
-  <form class="form" autocomplete="off" action="/newuser" method="post">
+  <form class="form create-form" autocomplete="off" action="/newuser" method="post">
     <label for="new-username">Create a new username, young warrior!</label><br>
     <input type="text" name="username" id="new-username" placeholder="username" required pattern='[a-z0-9]+'>
+    <p id="new-username-err"></p>
     <input type="password" name="password" id="new-password" placeholder="password" aria-label="create a password" minlength='6' pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$" required>
+    <p id="new-password-err"></p>
     <input type="submit" value="GO">
   </form>
-  <form class="form" autocomplete="off" action="/login" method="post">
+  <form class="form login-form" autocomplete="off" action="/login" method="post">
     <label for="login-username">Welcome Back, Enter your username to continue!</label><br>
     <input type="text" name="username" id="login-username" placeholder="username" required pattern='[a-z0-9]+'>
+    <p id="login-username-err"></p>
     <input type="password" name="password" id="login-password" placeholder="password" aria-label="enter login password" minlength='6' pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$" required>
+    <p id="login-password-err"></p>
+    <input type="submit" value="GO">
   </form>
-  <script src="./validation.js"></script>
+  <script src="./public/validation.js"></script>
 </body>
 </html>
