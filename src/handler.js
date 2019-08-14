@@ -44,11 +44,29 @@ const handleDbNewUser = (request, response) => {
   dataStreamer(request, (data) => {
     userName = data.split("=")[1];
     console.log('username in handleDbNewUser',userName);
-    queries.createUser(userName)
+
+    queries.checkExistingUsers(userName, (err, res) => {
+      if (err) console.log(err);
+      else {
+        if (res.length > 0) {
+          // user DOESNT exist
+          queries.createUser(userName)
+        }
+        else if (res.length === 0) {
+          // user EXISTS
+
+        };
+      }
+
+
+    });
+
     response.writeHead(301, { Location: '/public/inventory.html' })
     response.end()
   })
 }
+
+
 
 const handleGetInventory = (request, response) => {
   queries.getInventory((err, res) => {
@@ -60,8 +78,6 @@ const handleGetInventory = (request, response) => {
     }
   })
 }
-
-
 
 const handleDbLogin = (request, response) => {
   dataStreamer(request, (data) => {
@@ -88,7 +104,7 @@ const handleBuyItem = (request, response) => {
 
 const handleGetUser = (request, response) => {
   queries.getUserData(userName, (err, res) => {
-    console.log('username in getUser',userName);
+    // console.log('username in getUser',userName);
     if (err) console.log(err);
     userData = JSON.stringify(res);
     response.writeHead(200, { "Content-Type": "application/json" });

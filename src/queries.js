@@ -1,7 +1,7 @@
 const databaseConnection = require('./database/db_connection');
 
-const createUser = (name) => {
-    databaseConnection.query(`INSERT INTO users (name) VALUES ('${name}');`, (err, res) => {
+const createUser = (userName) => {
+    databaseConnection.query(`INSERT INTO users (name) VALUES ('${userName}');`, (err, res) => {
         if (err) {
             throw new Error('Enter a name')
         }
@@ -9,6 +9,17 @@ const createUser = (name) => {
     })
 }
 
+
+const checkExistingUsers = (requestedName, cb) => {
+    databaseConnection.query(`SELECT id FROM users WHERE name = '${requestedName}'`, (err, res) => {
+        if (err) {
+            cb(err);
+        }
+        else {
+            cb(null, res.rows);
+        }
+    });
+};
 
 
 const getUsers = (cb) => {
@@ -36,9 +47,11 @@ const getUserData = (name, cb) => {
 
 const getItemsOwnedBy = (username, cb) => {
     databaseConnection.query(`
-    SELECT item_name, item_description, item_power FROM users INNER JOIN ownership ON users.id = ownership.owner_id INNER JOIN
- inventory ON ownership.item_id = inventory.id
- WHERE name= '${username}'`, (err, res) => {
+    SELECT item_name, item_description, item_power
+    FROM users INNER JOIN ownership ON users.id = ownership.owner_id
+    INNER JOIN inventory
+    ON ownership.item_id = inventory.id
+    WHERE name= '${username}'`, (err, res) => {
             if (err) {
                 cb(err);
             } else {
@@ -123,4 +136,4 @@ const getAllScores = cb => {
         })
 }
 
-module.exports = { getUsers, getItemsOwnedBy, getInventory, getOwnership, buyItem, getScoreByUser, getAllScores, createUser, getUserData };
+module.exports = { getUsers, getItemsOwnedBy, getInventory, getOwnership, buyItem, getScoreByUser, getAllScores, createUser, getUserData, checkExistingUsers };
