@@ -1,7 +1,7 @@
 const databaseConnection = require('./database/db_connection');
 
 const createUser = (name) => {
-    databaseConnection.query(`INSERT INTO users(name) VALUES ('${name}');`, (err, res) => {
+    databaseConnection.query(`INSERT INTO users (name) VALUES ('${name}');`, (err, res) => {
         if (err) {
             throw new Error('Enter a name')
         }
@@ -38,7 +38,7 @@ const getItemsOwnedBy = (username, cb) => {
     databaseConnection.query(`
     SELECT item_name, item_description, item_power FROM users INNER JOIN ownership ON users.id = ownership.owner_id INNER JOIN
  inventory ON ownership.item_id = inventory.id
- WHERE name= $1`, [username], (err, res) => {
+ WHERE name= '${username}'`, (err, res) => {
             if (err) {
                 cb(err);
             } else {
@@ -73,7 +73,7 @@ const getOwnership = (cb) => {
 
 const buyItem = (user_name, item_name, cb) => {
     item_name = decodeURI(item_name);
-    const dbQuery = `UPDATE users SET gold_pieces = gold_pieces - (SELECT item_price from inventory WHERE item_name = '${item_name}'), name = '${user_name}';
+    const dbQuery = `UPDATE users SET gold_pieces = gold_pieces - (SELECT item_price from inventory WHERE item_name = '${item_name}') WHERE name = '${user_name}';
     UPDATE inventory SET item_quantity = item_quantity - 1 WHERE item_name = '${item_name}';
     INSERT INTO ownership(owner_id, item_id)
     VALUES ((SELECT id FROM users WHERE name = '${user_name}' LIMIT 1), (SELECT id FROM inventory WHERE item_name = '${item_name}' LIMIT 1));`

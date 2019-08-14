@@ -75,8 +75,8 @@ const buyItem = (itemName) => {
       const updatedSatchel = JSON.parse(xhr.responseText);
       //update inventory
       getInventoryData();
-      populateSatchel(updatedSatchel);
       getUserData();
+      populateSatchel(updatedSatchel);
     }
   }
   xhr.open("GET", url);
@@ -84,11 +84,12 @@ const buyItem = (itemName) => {
 }
 
 const populateSatchel = (arr) => {
+  console.log('purchase arr: ',arr);
   const satchelTable = document.querySelector(".satchel_table");
   while (satchelTable.firstChild) {
-    satchelTable.firstChild.remove()
+    satchelTable.firstChild.remove();
   }
-
+  console.log(JSON.stringify(satchelTable));
   arr.forEach(item => {
     let newItem = document.createElement('tr');
     // Item details filled in
