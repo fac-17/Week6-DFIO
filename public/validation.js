@@ -9,11 +9,17 @@ const newUserForm = document.querySelector('.login-form');
 // and sets a custom validity and also prevents default
 
 createForm.addEventListener('submit', (event) => {
-    if (newPasswordField.validity.valueMissing) {
-        newPasswordField.setCustomValidity('Please enter a password')
+    if (newPasswordField.validity.patternMismatch) {
         event.preventDefault();
+        newPasswordField.setCustomValidity('Please enter a password')
     }
+
+
 })
+newPasswordField.addEventListener('input', () => {
+    newPasswordField.setCustomValidity('');
+})
+
 
 // newUsernameField.setCustomValidity('Username must be lowercase letters and numbers only');
 // loginUsernameField.setCustomValidity('Username must be lowercase letters and numbers only');
