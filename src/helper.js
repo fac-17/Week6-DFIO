@@ -36,4 +36,32 @@ const createCookie = (name) => {
   return sign(userDetails, SECRET)
 }
 
+const checkCookie = (rawCookie) => {
+  if (!rawCookie) { 
+    console.log('no cookie');
+    return false;
+}
+  const { jwt } = parse(rawCookie);
+
+  if (!jwt) {
+    console.log('no jwt cookie');
+    return false;
+  }
+  return verify(jwt, SECRET, (err, jwt) => {
+    if (err) {
+      console.log(err);
+      return false;
+    }
+    else {
+      if (jwt.logged_in !== 'true') {
+        console.log('not logged in');
+        return false;
+      }
+      else {
+        return jwt.userName;
+      }
+    }
+  });
+}
+
 module.exports = { dataStreamer, hashPassword, comparePasswords, createCookie };
