@@ -1,4 +1,180 @@
-# Week6-DFIO
+# Week6/7-DFIO
+
+Victor, Jack, Reuben, Tony
+
+Installation
+
+- git clone git@github.com:fac-17/Week6-DFIO.git
+- cd into folder
+- npm install
+- npm start
+
+
+### Updated Agreements
+- Use ES6
+- Branches named Feature/branch
+- Work on remote branches together
+- Never push to master
+- Use const for any variables that don't change
+- Use === not ==
+- Ensure roughly equal commits
+- Make sure everyone know what they're doing on the presentation
+
+![](https://i.imgur.com/9WNYuWV.jpg)
+
+
+
+
+
+### Requirements
++ [ ] Login form with 2 fields - username and password
++ [ ] Users only have to log in once (i.e. implement a cookie-based session on login)
++ [ ] Username is visible on each page of the site after logging in
++ [ ] Any user-submitted content should be labelled with the authors username
+    +  2 Options
+    +  Refund functionality
+    +  Admins that can add new items 
++ [ ] There should be protected routes and unprotected routes that depend on the user having a cookie or not (or what level of access they have).
++ [ ] Website content should be stored in a database
++ [ ] Include thorough tests on the back-end, testing pure functions and testing routes using Supertest. If you make external API calls, use Nock to mock the response for your tests.
++ [ ] Test front-end logic, we don't expect tests on the DOM.
+
+![](https://i.imgur.com/prKjacL.jpg)
+
+### Tasks
+**relating to authentication**
++ [x] Create user with login fields and appropriate authentication
++ [x] Login with authentication
++ [ ] Add login to cookies
++ [ ] Redirect login if logged in to the inventory page
++ [ ] Redirect inventory page if not logged in to the inventory page (protected routes covered by this?)
+**other tasks - do if we have time after authentication work is completed**
++ [x] Get satchel working
++ [ ] Coins can't go below 0
++ [ ] Inventory and satchel table dom update functions need to be updated so that titles aren't deleted
++ [ ] LeaderBoard page
+
+![larping](http://giphygifs.s3.amazonaws.com/media/lVKeVXpbKEtaw/giphy.gif)
+
+### Day 1 
+- [x] **Database**: Add new column to USERS table to store hashed password
+- [ ] **Route 1:** Create new account
+    - [x] Client side Validation
+        - [x] Add password fields
+        - [x] Password long enough/short enough
+        - [x] Completed all the fields?
+        - [x] Passwords complex enough
+        - [x] Check username pattern, setcustomvalidity to say only lowercase letters and numbers (no spaces)
+        - [x] Check password pattern, set custom validity to check there is a lowercase letter, uppercase letter and number
+
+- [x]  **Route 2:** Log in with existing account
+    - [x] Hash, salt and store password.
+
+
+
+
+
+
+### Day 2
+- [x] **Route 1:** Create new account
+    - [x] Pass details (username, password) to the back-end, and make sure they are stored correctly on the backend
+    - [x] Create 'logged-in' token.
+    - [x] Redirect to user to inventory, logged-in as new account.
+
+- [x]  **Route 2:** Log in with existing account
+    - [x] Check log in details against USERS table 
+    - [x] Generate token and pass to front end
+
+
+
+- [x] Check existing token and redirect to relevant endpoint.
+    - [ ] If **no token** > to Login/Create account page
+    - [x] Set timeout on token
+    - [x] If **token** > to Inventory page as user
+
+
+## Afternoon 
+- [ ] Remove front end validation on password on login
+- [ ] Setup alert if password is wrong
+- [ ] Setup alert if username exists(response is being sent back to /login request, which is sent by form, not front-end XMLHttpRequest. figure out how to access this response.)
+- [x] Logout button on inventory page that removes cookies, redirect to home page
+    - [x] Add button to inventory page
+    - [x] Remove token
+    - [x] Redirect to home page  
+- [ ] Rename index.js file to inventory.js and update wherever necessary
+- [x] Redirect to login if you attempt to hit the inventory endpoint without a token
+- [x] Add column names to price and quantity
+
+
+
+
+### Stretch Goals
+- [ ] Not allow items to be bought when not enough gold
+    - [ ] Call back end when item is bought with user gold
+    - [ ] Function called checkEnoughGold(item name, username)
+    - [ ] Check DB with checkEnoughGold to deterine if user can buy item (return True/False)
+    - [ ] If true, buy item
+    - [ ] If false, response.end(Can't buy item)
+    - [ ] Promise > checkEnoughGold (Error > Break) > Buy Item 
+- [ ] Different permissions  (user, admin that can POST new items)
+- [ ] Leaderboard
+- [ ] Generate secure secret key
+
+
+### Lessons learned
+
+#### Put heavy lifting in SQL but be careful with column names
+* The column name for us was '?column?'
+
+```javascript
+const checkEnoughGold = (userName, itemName, cb) => {
+  decodedItemName = decodeURI(itemName);
+  databaseConnection.query(
+    `SELECT (SELECT gold_pieces FROM users WHERE name = '${userName}') - (SELECT item_price FROM inventory WHERE inventory.item_name = '${decodedItemName}')`,
+    (err, res) => {
+      if (err) cb(err);
+      else {
+        const valueDiff = res.rows[0]["?column?"];
+        const enoughGold = valueDiff >= 0 ? true : false;
+        cb(null, enoughGold);
+      }
+    }
+  );
+};
+```
+
+#### Decode your strings before SQL queries
+![jon](https://media.giphy.com/media/a2euXnuLIgVQA/giphy.gif)
+
+#### If you want to know what's in an object, console.log JUST the object
+
+#### User your tokens to stay logged in and check them every time you want to access something on the server
+
+#### Don't create elements on the front end just to destroy them 😔
+
+![](https://i.imgur.com/aSSrlB4.png)
+
+
+#### Check whether your username exists
+![](https://i.imgur.com/5gKtFaa.png)
+
+### Always have a squirrel handy...
+
+![tyrion](https://media.giphy.com/media/qNnQAESrblfDG/giphy.gif)
+
+### Future stuff
+![promises](https://media.giphy.com/media/1wQcWk02euAHQuealJ/giphy.gif)
+
+
+---
+
+---
+
+---
+
+
+# -- WEEK 1 README --
+## Week6-DFIO - Week 1
 
 Victor, Jack, Reuben, Tony
 
@@ -408,6 +584,9 @@ else if (endpoint.includes('public')) {
 
 
 ...
+
+
+
 
 
 
