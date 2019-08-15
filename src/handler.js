@@ -4,7 +4,7 @@ const querystring = require("querystring");
 const helper = require("./helper");
 const queries = require("./queries");
 let userName;
-let password = "oneTwoOneTwo";
+// let password = "oneTwoOneTwo";
 
 const handleHome = (request, response) => {
   const filePath = path.join(__dirname, "..", "public", "index.html");
@@ -106,7 +106,9 @@ const handleDbLogin = (request, response) => {
     password = parsedData.password;
     queries.getStoredPassword(userName, (err, res) => {
       if (err) console.log(err);
-      else helper.comparePasswords(password, storedPassword, (err, res) => {
+      else {
+        let storedPassword = res[0].hashed_password;
+        helper.comparePasswords(password, storedPassword, (err, res) => {
         if (err) console.log(err);
         else if (res) {
           console.log(`Login successful!`);
@@ -123,7 +125,8 @@ const handleDbLogin = (request, response) => {
           response.writeHead(302, { Location: "/" });
           response.end(res);
         }
-      });
+      })
+      };
     });
   });
 };
