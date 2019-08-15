@@ -38,6 +38,7 @@ const createCookie = (name) => {
 }
 
 const checkCookie = (rawCookie) => {
+  
   if (!rawCookie) {
     console.log('no cookie');
     return false;

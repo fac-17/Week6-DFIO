@@ -54,6 +54,7 @@ newUserForm.addEventListener('submit',(e)=>{
   const url = e.target.action;
   xhr.onreadystatechange = () => {
     if (xhr.readyState === 4 && xhr.status === 200) {
+
       console.log('userExists is',xhr.responseText)
     }
   };
@@ -74,5 +75,5 @@ loginForm.addEventListener('submit',(e)=>{
   };
   xhr.open("POST", url);
   console.log('url for login is',url);
-  xhr.send(`username=${newUsernameField.value}&password=${newPasswordField.value}`);
+  xhr.send(new URLSearchParams(new FormData(event.target)))
 })

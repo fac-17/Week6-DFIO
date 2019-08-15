@@ -4,6 +4,7 @@ const querystring = require("querystring");
 const helper = require("./helper");
 const queries = require("./queries");
 let userName;
+let password;
 // let password = "oneTwoOneTwo";
 
 const handleHome = (request, response) => {
@@ -15,13 +16,16 @@ const handleHome = (request, response) => {
       response.end("Something went wrong with our dragons");
     } else {
       if (helper.checkCookie(request.headers.cookie)) {
+        console.log('HANDLERS Accessed Check cookie on /home');
         userName = helper.checkCookie(request.headers.cookie);
         response.writeHead(302, { Location: "/public/inventory.html" });
         response.end(file);
       }
+      else {
+        response.writeHead(200, { "content-type": "text/html" });
+        response.end(file);
+      }
 
-      response.writeHead(200, { "content-type": "text/html" });
-      response.end(file);
     }
   });
 };
@@ -107,20 +111,21 @@ const handleDbLogin = (request, response) => {
       if (err) console.log(err);
       else {
         let storedPassword = res[0].hashed_password;
+        console.log({storedPassword});
         helper.comparePasswords(password, storedPassword, (err, res) => {
         if (err) console.log(err);
         else if (res) {
-          console.log(`Login successful!`);
+          console.log(`HANDLERS Login successful!`);
           const jwt = helper.createCookie(userName);
-          response.writeHead(302,
+          response.writeHead(301,
             {
-              Location: '/public/inventory.html',
+              Location: '/',
               'Set-Cookie': `jwt=${jwt}; Max-Age=9000` // NEED TO BE TESTED ONCE LOGIN ROUTE WORKS
             }
           );
           response.end();
         } else {
-          console.log(`Login unsuccessful!`);
+          console.log(`HANDLERS Login unsuccessful!`);
           response.writeHead(200, { 'content-type':'text/plain'});
           response.end(res.toString());
         }
@@ -143,7 +148,7 @@ const handleRequestSatchel = (request,response) => {
 }
 const handleBuyItem = (request, response) => {
   const itemToBuy = request.url.split("?")[1];
-  console.log("userName in handleBuyItem", userName);
+  console.log("HANDLERS  userName in handleBuyItem", userName);
   queries.buyItem(userName, itemToBuy, (err, itemsOwned) => {
     if (err) console.log(err);
     queries.getItemsOwnedBy(userName, (err, itemsOwned) => {
