@@ -4,16 +4,22 @@ const querystring = require("querystring");
 const helper = require("./helper");
 const queries = require("./queries");
 let userName;
-let password = "password";
+// let password = "oneTwoOneTwo";
 
 const handleHome = (request, response) => {
   const filePath = path.join(__dirname, "..", "public", "index.html");
-
+   // FOR TESTS - temp
   fs.readFile(filePath, (err, file) => {
     if (err) {
       response.writeHead(500, { "content-type": "text/html" });
       response.end("Something went wrong with our dragons");
     } else {
+      if (helper.checkCookie(request.headers.cookie)) {
+        userName = helper.checkCookie(request.headers.cookie);
+        response.writeHead(302, { Location: "/public/inventory.html" });
+        response.end(file);
+      }
+
       response.writeHead(200, { "content-type": "text/html" });
       response.end(file);
     }
@@ -54,19 +60,25 @@ const handleDbNewUser = (request, response) => {
       if (err) console.log(err);
       else {
         if (res.length > 0) {
-          // user DOES exist
+          // user DOES exist – so need to pick other name (set front end alert)
           userExists = "True";
           console.log(`Does the user exist?`, userExists);
           response.writeHead(302, { Location: "/" });
           response.end(userExists);
-        } else if (res.length === 0) {
+
+        }
+        else if (res.length === 0) {
+          // user DOESN'T exist – so CREATE USER (hash pw and set cookie)
           helper.hashPassword(password, (err, hashPassword) => {
             if (err) console.log(err);
             else queries.createUser(userName, hashPassword);
           });
-          // user DOESN'T exist
-          console.log("User doesnt exist", userName);
-          response.writeHead(301, { Location: "/public/inventory.html" });
+          const jwt = helper.createCookie(userName);
+          response.writeHead(301,
+            {
+              Location: '/public/inventory.html',
+              'Set-Cookie': `jwt=${jwt}; Max-Age=9000`
+            });
           response.end();
         }
       }
@@ -95,26 +107,32 @@ const handleDbLogin = (request, response) => {
     queries.getStoredPassword(userName, (err, res) => {
       if (err) console.log(err);
       else {
-        console.log("hashed password from the DB is", res[0].hashed_password);
-        storedPassword = res[0].hashed_password;
-        //helper.hashPassword(password, (err, inputPassword) => {
-        console.log("storedPassword before comparing", storedPassword);
+        let storedPassword = res[0].hashed_password;
         helper.comparePasswords(password, storedPassword, (err, res) => {
-          if (err) console.log(err);
-          else if (res) {
-            console.log(`Login successful!`);
-            response.writeHead(301, { Location: "public/inventory.html" });
-            response.end();
-          } else {
-            console.log(`Login unsuccessful!`);
-            response.writeHead(302, { Location: "/" });
-            response.end(res);
-          }
-        });
-      }
+        if (err) console.log(err);
+        else if (res) {
+          console.log(`Login successful!`);
+          const jwt = helper.createCookie(userName);
+          response.writeHead(302,
+            {
+              Location: '/public/inventory.html',
+              'Set-Cookie': `jwt=${jwt}; Max-Age=9000` // NEED TO BE TESTED ONCE LOGIN ROUTE WORKS
+            }
+          );
+          response.end();
+        } else {
+          console.log(`Login unsuccessful!`);
+          response.writeHead(302, { Location: "/" });
+          response.end(res);
+        }
+      })
+      };
     });
   });
 };
+
+
+
 const handleRequestSatchel = (request,response) => {
   queries.getItemsOwnedBy(userName, (err, itemsOwned) => {
     if (err) console.log(err);

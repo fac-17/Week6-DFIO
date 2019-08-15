@@ -1,4 +1,7 @@
 const bcrypt = require("bcryptjs");
+const { parse } = require('cookie');
+const { sign, verify } = require('jsonwebtoken');
+const SECRET = 'thereWasNoDimensionsFestival';
 
 const comparePasswords = (password, hashedPassword, callback) => {
   console.log(`The hashed password from the user is: `, password);
@@ -26,4 +29,41 @@ const dataStreamer = (request, cb) => {
   });
 };
 
-module.exports = { dataStreamer, hashPassword, comparePasswords };
+const createCookie = (name) => {
+  const userDetails = {
+    userName: name,
+    logged_in: 'true',
+  }
+  return sign(userDetails, SECRET)
+}
+
+const checkCookie = (rawCookie) => {
+  if (!rawCookie) {
+    console.log('no cookie');
+    return false;
+}
+  const { jwt } = parse(rawCookie);
+
+  if (!jwt) {
+    console.log('no jwt cookie');
+    return false;
+  }
+  return verify(jwt, SECRET, (err, jwt) => {
+    if (err) {
+      console.log(err);
+      return false;
+    }
+    else {
+      if (jwt.logged_in !== 'true') {
+        console.log('not logged in');
+        return false;
+      }
+      else {
+        console.log("JWT IS ", jwt);
+        return jwt.userName;
+      }
+    }
+  });
+}
+
+module.exports = { dataStreamer, hashPassword, comparePasswords, createCookie, checkCookie };
