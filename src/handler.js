@@ -65,7 +65,6 @@ const handleDbNewUser = (request, response) => {
             else queries.createUser(userName, hashPassword);
           });
           const jwt = helper.createCookie(userName);
-          console.log({jwt});
           response.writeHead(301,
             {
               Location: '/public/inventory.html',
@@ -106,7 +105,13 @@ const handleDbLogin = (request, response) => {
         if (err) console.log(err);
         else if (res) {
           console.log(`Login successful!`);
-          response.writeHead(302, { Location: "/inventory" });
+          const jwt = helper.createCookie(userName);
+          response.writeHead(302,
+            {
+              Location: '/public/inventory.html',
+              'Set-Cookie': `jwt=${jwt}; Max-Age=9000` // NEED TO BE TESTED ONCE LOGIN ROUTE WORKS
+            }
+          );
           response.end();
         } else {
           console.log(`Login unsuccessful!`);
