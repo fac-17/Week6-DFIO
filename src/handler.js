@@ -61,11 +61,10 @@ const handleDbNewUser = (request, response) => {
       else {
         if (res.length > 0) {
           // user DOES exist – so need to pick other name (set front end alert)
-          userExists = "True";
+          userExists = "true";
           console.log(`Does the user exist?`, userExists);
-          response.writeHead(302, { Location: "/" });
+          response.writeHead(200, { 'content-type':'text/plain'});
           response.end(userExists);
-
         }
         else if (res.length === 0) {
           // user DOESN'T exist – so CREATE USER (hash pw and set cookie)
@@ -122,8 +121,8 @@ const handleDbLogin = (request, response) => {
           response.end();
         } else {
           console.log(`Login unsuccessful!`);
-          response.writeHead(302, { Location: "/" });
-          response.end(res);
+          response.writeHead(200, { 'content-type':'text/plain'});
+          response.end(res.toString());
         }
       })
       };
