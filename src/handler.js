@@ -146,9 +146,10 @@ const handleRequestSatchel = (request, response) => {
 };
 const handleBuyItem = (request, response) => {
   const itemToBuy = request.url.split("?")[1];
-  console.log(' amount returned from check enough gold: ' + queries.checkEnoughGold(userName,itemToBuy, (err, res) => {
+  queries.checkEnoughGold(userName,itemToBuy, (err, res) => {
     if (err) console.log(err);
-  }));
+    else console.log('handlbuyitem check gold call' + res[0][column]);
+  });
   console.log("userName in handleBuyItem", userName);
   queries.buyItem(userName, itemToBuy, (err, itemsOwned) => {
     if (err) console.log(err);

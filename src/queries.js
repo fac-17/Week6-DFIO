@@ -159,14 +159,11 @@ const getAllScores = cb => {
 
 const checkEnoughGold = (userName, itemName, cb) => {
   databaseConnection.query(
-    `SELECT (SELECT gold_pieces FROM users WHERE name = $1) 
-    - 
-    (SELECT item_price FROM inventory 
-      WHERE inventory.item_name = $2)`,
-      [userName, itemName],
+    `SELECT (SELECT gold_pieces FROM users WHERE name = 'herm') - (SELECT item_price FROM inventory WHERE inventory.item_name = 'Cape')`,
     (err, res) => {
       if (err) cb(err);
       else {
+        console.log('check enough gold ' + res.rows);
         cb(null, res.rows);
       }
     }
