@@ -1,5 +1,7 @@
 const bcrypt = require("bcryptjs");
-
+const { parse } = require('cookie');
+const { sign, verify } = require('jsonwebtoken');
+const SECRET = 'thereWasNoDimensionsFestival';
 
 const comparePasswords = (password, hashedPassword, callback) => {
   bcrypt.compare(password, hashedPassword, callback);
@@ -26,4 +28,12 @@ const dataStreamer = (request, cb) => {
   });
 };
 
-module.exports = { dataStreamer, hashPassword, comparePasswords };
+const createCookie = (name) => {
+  const userDetails = {
+    userName: name,
+    logged_in: 'true',
+  }
+  return sign(userDetails, SECRET)
+}
+
+module.exports = { dataStreamer, hashPassword, comparePasswords, createCookie };
