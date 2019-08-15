@@ -51,19 +51,26 @@ const handleDbNewUser = (request, response) => {
       if (err) console.log(err);
       else {
         if (res.length > 0) {
-          // user DOES exist
+          // user DOES exist – so need to pick other name (set front end alert)
           userExists = "True";
           console.log(`Does the user exist?`, userExists);
           response.writeHead(302, { Location: "/" });
           response.end(userExists);
-        } else if (res.length === 0) {
+
+        }
+        else if (res.length === 0) {
+          // user DOESN'T exist – so CREATE USER (hash pw and set cookie)
           helper.hashPassword(password, (err, hashPassword) => {
             if (err) console.log(err);
             else queries.createUser(userName, hashPassword);
           });
-          // user DOESN'T exist
-          console.log("User doesnt exist", userName);
-          response.writeHead(301, { Location: "/public/inventory.html" });
+          const jwt = helper.createCookie(userName);
+          console.log({jwt});
+          response.writeHead(301,
+            {
+              Location: '/public/inventory.html',
+              'Set-Cookie': `jwt=${jwt}; Max-Age=9000`
+            });
           response.end();
         }
       }
