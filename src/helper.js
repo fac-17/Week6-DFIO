@@ -37,7 +37,7 @@ const createCookie = (name) => {
 }
 
 const checkCookie = (rawCookie) => {
-  if (!rawCookie) { 
+  if (!rawCookie) {
     console.log('no cookie');
     return false;
 }
@@ -58,10 +58,11 @@ const checkCookie = (rawCookie) => {
         return false;
       }
       else {
+        console.log("JWT IS ", jwt);
         return jwt.userName;
       }
     }
   });
 }
 
-module.exports = { dataStreamer, hashPassword, comparePasswords, createCookie };
+module.exports = { dataStreamer, hashPassword, comparePasswords, createCookie, checkCookie };

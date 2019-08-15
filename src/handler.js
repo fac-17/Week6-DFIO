@@ -4,11 +4,11 @@ const querystring = require("querystring");
 const helper = require("./helper");
 const queries = require("./queries");
 let userName;
-let password = "password";
+let password = "oneTwoOneTwo";
 
 const handleHome = (request, response) => {
   const filePath = path.join(__dirname, "..", "public", "index.html");
-
+  helper.checkCookie(request.headers.cookie); // FOR TESTS - temp
   fs.readFile(filePath, (err, file) => {
     if (err) {
       response.writeHead(500, { "content-type": "text/html" });
@@ -94,11 +94,8 @@ const handleDbLogin = (request, response) => {
   let loginSuccesful;
   helper.dataStreamer(request, data => {
     response.writeHead(301, { Location: "/public/inventory.html" });
-
     userName = data.split("=")[1];
-
     storedPassword = queries.getStoredPassword(userName);
-    console.log({storedPassword});
     helper.hashPassword(password, (err, inputPassword) => {
       if (err) console.log(err);
       else helper.comparePasswords(inputPassword, storedPassword, (err, res) => {
