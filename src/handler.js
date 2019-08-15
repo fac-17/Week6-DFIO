@@ -1,9 +1,10 @@
 const fs = require("fs");
 const path = require("path");
 const querystring = require("querystring");
-const dataStreamer = require("./helper").dataStreamer;
-const queries = require('./queries');
+const helper = require("./helper");
+const queries = require("./queries");
 let userName;
+let password = "password";
 
 const handleHome = (request, response) => {
   const filePath = path.join(__dirname, "..", "public", "index.html");
@@ -26,9 +27,9 @@ const handlePublic = (request, response) => {
     css: "text/css",
     js: "application/javascript",
     ico: "image/x-icon"
-  }
+  };
 
-  const filePath = path.join(__dirname, "..", request.url)
+  const filePath = path.join(__dirname, "..", request.url);
   fs.readFile(filePath, (error, file) => {
     if (error) {
       response.writeHead(500, { "content-type": "text/html" });
@@ -36,19 +37,39 @@ const handlePublic = (request, response) => {
     } else {
       response.writeHead(200, { "content-type": extensionType[extension] });
       response.end(file);
-    };
+    }
   });
 };
 
 const handleDbNewUser = (request, response) => {
-  dataStreamer(request, (data) => {
+  let userExists = "";
+  helper.dataStreamer(request, data => {
     userName = data.split("=")[1];
-    console.log('username in handleDbNewUser',userName);
-    queries.createUser(userName)
-    response.writeHead(301, { Location: '/public/inventory.html' })
-    response.end()
-  })
-}
+    console.log("username in handleDbNewUser", userName);
+
+    queries.checkExistingUsers(userName, (err, res) => {
+      if (err) console.log(err);
+      else {
+        if (res.length > 0) {
+          // user DOES exist
+          userExists = "True";
+          console.log(`Does the user exist?`, userExists);
+          response.writeHead(302, { Location: "/" });
+          response.end(userExists);
+        } else if (res.length === 0) {
+          helper.hashPassword(password, (err, hashPassword) => {
+            if (err) console.log(err);
+            else queries.createUser(userName, hashPassword);
+          });
+          // user DOESN'T exist
+          console.log("User doesnt exist", userName);
+          response.writeHead(301, { Location: "/public/inventory.html" });
+          response.end();
+        }
+      }
+    });
+  });
+};
 
 const handleGetInventory = (request, response) => {
   queries.getInventory((err, res) => {
@@ -58,22 +79,44 @@ const handleGetInventory = (request, response) => {
       response.writeHead(200, { "Content-Type": "application/json" });
       response.end(inventoryArray);
     }
-  })
-}
+  });
+};
 
 
 
 const handleDbLogin = (request, response) => {
-  dataStreamer(request, (data) => {
-    response.writeHead(301, { Location: '/public/inventory.html' })
+  let loginSuccesful;
+  helper.dataStreamer(request, data => {
+    response.writeHead(301, { Location: "/public/inventory.html" });
+
     userName = data.split("=")[1];
-    response.end()
-  })
-}
+
+    storedPassword = queries.getStoredPassword(userName);
+    console.log({storedPassword});
+    helper.hashPassword(password, (err, inputPassword) => {
+      if (err) console.log(err);
+      else helper.comparePasswords(inputPassword, storedPassword, (err, res) => {
+        if (err) console.log(err);
+        else if (res) {
+          console.log(`Login successful!`);
+          response.writeHead(302, { Location: "/inventory" });
+          response.end();
+        } else {
+          console.log(`Login unsuccessful!`);
+          response.writeHead(302, { Location: "/" });
+          response.end(res);
+        }
+      });
+    });
+
+    });
+
+    response.end();
+  };
 
 const handleBuyItem = (request, response) => {
-  const itemToBuy = request.url.split('?')[1];
-  console.log('userName in handleBuyItem', userName);
+  const itemToBuy = request.url.split("?")[1];
+  console.log("userName in handleBuyItem", userName);
   queries.buyItem(userName, itemToBuy, (err, itemsOwned) => {
     if (err) console.log(err);
     queries.getItemsOwnedBy(userName, (err, itemsOwned) => {
@@ -82,22 +125,26 @@ const handleBuyItem = (request, response) => {
       // console.log(itemsOwned);
       response.writeHead(200, { "Content-Type": "application/json" });
       response.end(itemsOwned);
-    })
-  })
-}
+    });
+  });
+};
 
 const handleGetUser = (request, response) => {
   queries.getUserData(userName, (err, res) => {
-    console.log('username in getUser',userName);
+    // console.log('username in getUser',userName);
     if (err) console.log(err);
     userData = JSON.stringify(res);
     response.writeHead(200, { "Content-Type": "application/json" });
     response.end(userData);
+  });
+};
 
-  })
-}
-
-
-
-
-module.exports = { handleHome, handlePublic, handleDbNewUser, handleGetInventory, handleDbLogin, handleGetUser, handleBuyItem };
+module.exports = {
+  handleHome,
+  handlePublic,
+  handleDbNewUser,
+  handleGetInventory,
+  handleDbLogin,
+  handleGetUser,
+  handleBuyItem
+};

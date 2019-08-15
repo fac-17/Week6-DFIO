@@ -7,7 +7,8 @@ DROP TABLE IF EXISTS ownership CASCADE;
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   name VARCHAR(30) NOT NULL,
-  gold_pieces INTEGER DEFAULT 20
+  gold_pieces INTEGER DEFAULT 20,
+  hashed_password VARCHAR NOT NULL
 );
 
 CREATE TABLE inventory (
@@ -26,8 +27,8 @@ CREATE TABLE ownership (
   item_id INTEGER REFERENCES inventory(id)
 );
 
-INSERT INTO users (name)
-VALUES ('Jon'), ('Aria'), ('Hodor'), ('Kevin');
+INSERT INTO users (name, hashed_password)
+VALUES ('Jon', 'PasswordJon'), ('Aria', 'PasswordAria'), ('Hodor', 'PasswordHodor'), ('Kevin', 'PasswordKevin');
 
 INSERT INTO inventory
 (item_name, item_quantity, item_description, item_price, item_available, item_power)
