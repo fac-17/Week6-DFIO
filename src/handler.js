@@ -1,9 +1,10 @@
 const fs = require("fs");
 const path = require("path");
 const querystring = require("querystring");
-const dataStreamer = require("./helper").dataStreamer;
+const helper = require("./helper");
 const queries = require("./queries");
 let userName;
+let password = "password";
 
 const handleHome = (request, response) => {
   const filePath = path.join(__dirname, "..", "public", "index.html");
@@ -42,7 +43,7 @@ const handlePublic = (request, response) => {
 
 const handleDbNewUser = (request, response) => {
   let userExists = "";
-  dataStreamer(request, data => {
+  helper.dataStreamer(request, data => {
     userName = data.split("=")[1];
     console.log("username in handleDbNewUser", userName);
 
@@ -56,15 +57,19 @@ const handleDbNewUser = (request, response) => {
           response.writeHead(302, { Location: "/" });
           response.end(userExists);
         } else if (res.length === 0) {
+          helper.hashPassword(password, (err, hashPassword) => {
+            if (err) console.log(err);
+            else queries.createUser(userName, hashPassword);
+          });
           // user DOESN'T exist
           // userExists = "False";
-          queries.createUser(userName);
-          console.log('User doesnt exist', userName);
+          //call our haspassword function, and pass that into create user function.
+          //And don't forget to change the create user function to take a password
+          console.log("User doesnt exist", userName);
           response.writeHead(301, { Location: "/public/inventory.html" });
           response.end();
         }
       }
-
     });
   });
 };
