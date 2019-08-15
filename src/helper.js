@@ -1,5 +1,11 @@
 const bcrypt = require("bcryptjs");
 
+
+const comparePasswords = (password, hashedPassword, callback) => {
+  bcrypt.compare(password, hashedPassword, callback);
+};
+
+
 const hashPassword = (password, callback) => {
   bcrypt.genSalt(10, (err, salt) => {
     if (err) {
@@ -20,4 +26,4 @@ const dataStreamer = (request, cb) => {
   });
 };
 
-module.exports = { dataStreamer, hashPassword };
+module.exports = { dataStreamer, hashPassword, comparePasswords };

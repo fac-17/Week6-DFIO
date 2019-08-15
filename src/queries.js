@@ -24,6 +24,16 @@ const checkExistingUsers = (requestedName, cb) => {
   );
 };
 
+const getStoredPassword = (userName, cb) => {
+  databaseConnection.query(`SELECT hashed_password FROM users WHERE name = '${userName}'`, (err, res) => {
+    if (err) {
+      cb(err);
+    } else {
+      cb(null, res);
+    }
+  });
+}
+
 const getUsers = cb => {
   databaseConnection.query("SELECT * FROM users ORDER BY id", (err, res) => {
     if (err) {
@@ -157,5 +167,6 @@ module.exports = {
   getAllScores,
   createUser,
   getUserData,
-  checkExistingUsers
+  checkExistingUsers,
+  getStoredPassword
 };

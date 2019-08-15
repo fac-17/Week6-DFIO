@@ -62,9 +62,6 @@ const handleDbNewUser = (request, response) => {
             else queries.createUser(userName, hashPassword);
           });
           // user DOESN'T exist
-          // userExists = "False";
-          //call our haspassword function, and pass that into create user function.
-          //And don't forget to change the create user function to take a password
           console.log("User doesnt exist", userName);
           response.writeHead(301, { Location: "/public/inventory.html" });
           response.end();
@@ -85,13 +82,37 @@ const handleGetInventory = (request, response) => {
   });
 };
 
+
+
 const handleDbLogin = (request, response) => {
-  dataStreamer(request, data => {
+  let loginSuccesful;
+  helper.dataStreamer(request, data => {
     response.writeHead(301, { Location: "/public/inventory.html" });
+
     userName = data.split("=")[1];
+
+    storedPassword = queries.getStoredPassword(userName);
+    console.log({storedPassword});
+    helper.hashPassword(password, (err, inputPassword) => {
+      if (err) console.log(err);
+      else helper.comparePasswords(inputPassword, storedPassword, (err, res) => {
+        if (err) console.log(err);
+        else if (res) {
+          console.log(`Login successful!`);
+          response.writeHead(302, { Location: "/inventory" });
+          response.end();
+        } else {
+          console.log(`Login unsuccessful!`);
+          response.writeHead(302, { Location: "/" });
+          response.end(res);
+        }
+      });
+    });
+
+    });
+
     response.end();
-  });
-};
+  };
 
 const handleBuyItem = (request, response) => {
   const itemToBuy = request.url.split("?")[1];
