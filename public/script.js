@@ -1,3 +1,11 @@
+const logoutButton = document.querySelector('.logout');
+
+const logout = () => {
+  document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  window.location.pathname = '/';
+}
+logoutButton.addEventListener('click', logout);
+
 const getInventoryData = () => {
   const xhr = new XMLHttpRequest();
   const url = "/getinventory";
@@ -117,6 +125,7 @@ const populateSatchel = arr => {
     satchelTable.appendChild(newItem);
   });
 };
+
 
 // const request = (url,cb) => {
 //   const xhr = new XMLHttpRequest();

@@ -8,7 +8,7 @@ let userName;
 
 const handleHome = (request, response) => {
   const filePath = path.join(__dirname, "..", "public", "index.html");
-   // FOR TESTS - temp
+  // FOR TESTS - temp
   fs.readFile(filePath, (err, file) => {
     if (err) {
       response.writeHead(500, { "content-type": "text/html" });
@@ -27,6 +27,7 @@ const handleHome = (request, response) => {
 };
 
 const handlePublic = (request, response) => {
+  console.log(`You are in handlePublic`);
   const extension = path.extname(request.url).substring(1);
   const extensionType = {
     html: "text/html",
@@ -34,8 +35,16 @@ const handlePublic = (request, response) => {
     js: "application/javascript",
     ico: "image/x-icon"
   };
-
   const filePath = path.join(__dirname, "..", request.url);
+  console.log(filePath);
+
+  if (
+    filePath.includes(`/public/inventory.html`) &&
+    !helper.checkCookie(request.headers.cookie)
+  ) {
+    response.writeHead(302, { Location: "/" });
+    response.end();
+  }
   fs.readFile(filePath, (error, file) => {
     if (error) {
       response.writeHead(500, { "content-type": "text/html" });
@@ -65,20 +74,17 @@ const handleDbNewUser = (request, response) => {
           console.log(`Does the user exist?`, userExists);
           response.writeHead(302, { Location: "/" });
           response.end(userExists);
-
-        }
-        else if (res.length === 0) {
+        } else if (res.length === 0) {
           // user DOESN'T exist – so CREATE USER (hash pw and set cookie)
           helper.hashPassword(password, (err, hashPassword) => {
             if (err) console.log(err);
             else queries.createUser(userName, hashPassword);
           });
           const jwt = helper.createCookie(userName);
-          response.writeHead(301,
-            {
-              Location: '/public/inventory.html',
-              'Set-Cookie': `jwt=${jwt}; Max-Age=9000`
-            });
+          response.writeHead(301, {
+            Location: "/public/inventory.html",
+            "Set-Cookie": `jwt=${jwt}; Max-Age=9000`
+          });
           response.end();
         }
       }
@@ -109,31 +115,27 @@ const handleDbLogin = (request, response) => {
       else {
         let storedPassword = res[0].hashed_password;
         helper.comparePasswords(password, storedPassword, (err, res) => {
-        if (err) console.log(err);
-        else if (res) {
-          console.log(`Login successful!`);
-          const jwt = helper.createCookie(userName);
-          response.writeHead(302,
-            {
-              Location: '/public/inventory.html',
-              'Set-Cookie': `jwt=${jwt}; Max-Age=9000` // NEED TO BE TESTED ONCE LOGIN ROUTE WORKS
-            }
-          );
-          response.end();
-        } else {
-          console.log(`Login unsuccessful!`);
-          response.writeHead(302, { Location: "/" });
-          response.end(res);
-        }
-      })
-      };
+          if (err) console.log(err);
+          else if (res) {
+            console.log(`Login successful!`);
+            const jwt = helper.createCookie(userName);
+            response.writeHead(302, {
+              Location: "/public/inventory.html",
+              "Set-Cookie": `jwt=${jwt}; Max-Age=9000` // NEED TO BE TESTED ONCE LOGIN ROUTE WORKS
+            });
+            response.end();
+          } else {
+            console.log(`Login unsuccessful!`);
+            response.writeHead(302, { Location: "/" });
+            response.end(res);
+          }
+        });
+      }
     });
   });
 };
 
-
-
-const handleRequestSatchel = (request,response) => {
+const handleRequestSatchel = (request, response) => {
   queries.getItemsOwnedBy(userName, (err, itemsOwned) => {
     if (err) console.log(err);
     itemsOwned = JSON.stringify(itemsOwned);
@@ -141,7 +143,7 @@ const handleRequestSatchel = (request,response) => {
     response.writeHead(200, { "Content-Type": "application/json" });
     response.end(itemsOwned);
   });
-}
+};
 const handleBuyItem = (request, response) => {
   const itemToBuy = request.url.split("?")[1];
   console.log("userName in handleBuyItem", userName);
