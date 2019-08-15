@@ -157,6 +157,22 @@ const getAllScores = cb => {
   );
 };
 
+const checkEnoughGold = (userName, itemName, cb) => {
+  databaseConnection.query(
+    `SELECT (SELECT gold_pieces FROM users WHERE name = $1) 
+    - 
+    (SELECT item_price FROM inventory 
+      WHERE inventory.item_name = $2)`,
+      [userName, itemName],
+    (err, res) => {
+      if (err) cb(err);
+      else {
+        cb(null, res.rows);
+      }
+    }
+  );
+};
+
 module.exports = {
   getUsers,
   getItemsOwnedBy,
@@ -168,5 +184,6 @@ module.exports = {
   createUser,
   getUserData,
   checkExistingUsers,
-  getStoredPassword
+  getStoredPassword,
+  checkEnoughGold
 };
