@@ -8,12 +8,18 @@ let password = "oneTwoOneTwo";
 
 const handleHome = (request, response) => {
   const filePath = path.join(__dirname, "..", "public", "index.html");
-  helper.checkCookie(request.headers.cookie); // FOR TESTS - temp
+   // FOR TESTS - temp
   fs.readFile(filePath, (err, file) => {
     if (err) {
       response.writeHead(500, { "content-type": "text/html" });
       response.end("Something went wrong with our dragons");
     } else {
+      if (helper.checkCookie(request.headers.cookie)) {
+        userName = helper.checkCookie(request.headers.cookie);
+        response.writeHead(302, { Location: "/public/inventory.html" });
+        response.end(file);
+      }
+
       response.writeHead(200, { "content-type": "text/html" });
       response.end(file);
     }
