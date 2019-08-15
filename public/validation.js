@@ -1,28 +1,33 @@
 console.log('hello');
 const newUsernameField = document.querySelector('#new-username');
-const loginUsernameField = document.querySelector('#login-username');
 const newPasswordField = document.querySelector('#new-password');
+const loginUsernameField = document.querySelector('#login-username');
 const loginPasswordField = document.querySelector('#login-password');
-const createForm = document.querySelector('.create-form');
-const newUserForm = document.querySelector('.login-form');
-// submit event listener on the form that checks validity using validity.patternmismatch 
-// and sets a custom validity and also prevents default
 
-createForm.addEventListener('submit', (event) => {
-    if (newPasswordField.validity.patternMismatch) {
-        event.preventDefault();
-        newPasswordField.setCustomValidity('Please enter a password')
-    }
-
-
+newUsernameField.addEventListener('input', (e) => {
+   newUsernameField.setCustomValidity('');
 })
-newPasswordField.addEventListener('input', () => {
-    newPasswordField.setCustomValidity('');
+newUsernameField.addEventListener('invalid',(e)=> {
+   newUsernameField.setCustomValidity('Username must be lowercase or numbers only, without spaces');
 })
 
+newPasswordField.addEventListener('input', (e) => {
+   newPasswordField.setCustomValidity('');
+})
+newPasswordField.addEventListener('invalid',(e)=> {
+   newPasswordField.setCustomValidity('Password must be 6 characters with at least one lower case, one upper case and one number');
+})
 
-// newUsernameField.setCustomValidity('Username must be lowercase letters and numbers only');
-// loginUsernameField.setCustomValidity('Username must be lowercase letters and numbers only');
+loginUsernameField.addEventListener('input', (e) => {
+   loginUsernameField.setCustomValidity('');
+})
+loginUsernameField.addEventListener('invalid',(e)=> {
+   loginUsernameField.setCustomValidity('Username must be lowercase or numbers only, without spaces');
+})
 
-// newPasswordField.setCustomValidity('Password must be 6 characters with at least one lower case, one upper case and one number');
-// loginPasswordField.setCustomValidity('Password must be 6 characters with at least one lower case, one upper case and one number');
+loginPasswordField.addEventListener('input', (e) => {
+   loginPasswordField.setCustomValidity('');
+})
+loginPasswordField.addEventListener('invalid',(e)=> {
+   loginPasswordField.setCustomValidity('Password must be 6 characters with at least one lower case, one upper case and one number');
+})
