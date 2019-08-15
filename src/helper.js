@@ -4,9 +4,10 @@ const { sign, verify } = require('jsonwebtoken');
 const SECRET = 'thereWasNoDimensionsFestival';
 
 const comparePasswords = (password, hashedPassword, callback) => {
+  console.log(`The hashed password from the user is: `, password);
+  console.log(`The hashed password from the DB is: `, hashedPassword);
   bcrypt.compare(password, hashedPassword, callback);
 };
-
 
 const hashPassword = (password, callback) => {
   bcrypt.genSalt(10, (err, salt) => {

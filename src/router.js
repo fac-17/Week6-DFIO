@@ -15,8 +15,8 @@ const router = (request, response) => {
     handlers.handleDbLogin(request, response);
   } else if (endpoint.includes('/getinventory')) {
     handlers.handleGetInventory(request, response);
-  } else if (endpoint.includes('/getitemsowned')) {
-    handlers.handleGetItemsOwned(request, response);
+  } else if (endpoint.includes('/requestsatchel')) {
+    handlers.handleRequestSatchel(request, response);
   } else if (endpoint.includes('/buyitem')) {
     handlers.handleBuyItem(request, response);
   } else if (endpoint.includes('/getuser')) {

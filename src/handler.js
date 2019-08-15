@@ -50,8 +50,11 @@ const handlePublic = (request, response) => {
 const handleDbNewUser = (request, response) => {
   let userExists = "";
   helper.dataStreamer(request, data => {
-    userName = data.split("=")[1];
+    parsedData = querystring.parse(data);
+    userName = parsedData.username;
+    password = parsedData.password;
     console.log("username in handleDbNewUser", userName);
+    console.log("password in handleDbNewUser", password);
 
     queries.checkExistingUsers(userName, (err, res) => {
       if (err) console.log(err);
@@ -94,17 +97,16 @@ const handleGetInventory = (request, response) => {
   });
 };
 
-
-
 const handleDbLogin = (request, response) => {
   let loginSuccesful;
+  let storedPassword = "";
   helper.dataStreamer(request, data => {
-    response.writeHead(301, { Location: "/public/inventory.html" });
-    userName = data.split("=")[1];
-    storedPassword = queries.getStoredPassword(userName);
-    helper.hashPassword(password, (err, inputPassword) => {
+    parsedData = querystring.parse(data);
+    userName = parsedData.username;
+    password = parsedData.password;
+    queries.getStoredPassword(userName, (err, res) => {
       if (err) console.log(err);
-      else helper.comparePasswords(inputPassword, storedPassword, (err, res) => {
+      else helper.comparePasswords(password, storedPassword, (err, res) => {
         if (err) console.log(err);
         else if (res) {
           console.log(`Login successful!`);
@@ -123,12 +125,20 @@ const handleDbLogin = (request, response) => {
         }
       });
     });
+  });
+};
 
-    });
 
-    response.end();
-  };
 
+const handleRequestSatchel = (request,response) => {
+  queries.getItemsOwnedBy(userName, (err, itemsOwned) => {
+    if (err) console.log(err);
+    itemsOwned = JSON.stringify(itemsOwned);
+    // console.log(itemsOwned);
+    response.writeHead(200, { "Content-Type": "application/json" });
+    response.end(itemsOwned);
+  });
+}
 const handleBuyItem = (request, response) => {
   const itemToBuy = request.url.split("?")[1];
   console.log("userName in handleBuyItem", userName);
@@ -161,5 +171,6 @@ module.exports = {
   handleGetInventory,
   handleDbLogin,
   handleGetUser,
+  handleRequestSatchel,
   handleBuyItem
 };
