@@ -115,7 +115,15 @@ const handleDbLogin = (request, response) => {
     });
   });
 };
-
+const handleRequestSatchel = (request,response) => {
+  queries.getItemsOwnedBy(userName, (err, itemsOwned) => {
+    if (err) console.log(err);
+    itemsOwned = JSON.stringify(itemsOwned);
+    // console.log(itemsOwned);
+    response.writeHead(200, { "Content-Type": "application/json" });
+    response.end(itemsOwned);
+  });
+}
 const handleBuyItem = (request, response) => {
   const itemToBuy = request.url.split("?")[1];
   console.log("userName in handleBuyItem", userName);
@@ -148,5 +156,6 @@ module.exports = {
   handleGetInventory,
   handleDbLogin,
   handleGetUser,
+  handleRequestSatchel,
   handleBuyItem
 };

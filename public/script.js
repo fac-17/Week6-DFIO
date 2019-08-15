@@ -26,20 +26,20 @@ const getUserData = () => {
 
 const requestSatchel = () => {
   const xhr = new XMLHttpRequest();
-  const url = `/requestSatchel`
-  xhr.onreadystatechange() => {
+  const url = `/requestsatchel`
+  xhr.onreadystatechange = () => {
     if (xhr.readyState === 4 && xhr.status === 200 ) {
-      const satchel = JSON.parse(xhr.responseText)
-      populateSatchel(satchel)
+      const satchel = JSON.parse(xhr.responseText);
+      populateSatchel(satchel);
     }
-}
+  }
 xhr.open('GET', url)
 xhr.send()
 };
 
 getInventoryData();
 getUserData();
-requestSatchel()
+requestSatchel();
 
 
 
