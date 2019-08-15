@@ -44,9 +44,9 @@ const handlePublic = (request, response) => {
 const handleDbNewUser = (request, response) => {
   let userExists = "";
   helper.dataStreamer(request, data => {
-    parsedData=querystring.parse(data);
-    userName=parsedData.username;
-    password=parsedData.password;
+    parsedData = querystring.parse(data);
+    userName = parsedData.username;
+    password = parsedData.password;
     console.log("username in handleDbNewUser", userName);
     console.log("password in handleDbNewUser", password);
 
@@ -85,46 +85,36 @@ const handleGetInventory = (request, response) => {
   });
 };
 
-
-
 const handleDbLogin = (request, response) => {
-
   let loginSuccesful;
-  let storedPassword='';
+  let storedPassword = "";
   helper.dataStreamer(request, data => {
-    parsedData=querystring.parse(data);
-    userName=parsedData.username;
-    password=parsedData.password;
-    queries.getStoredPassword(userName, (err,res)=>{
-      if(err)
-      console.log(err)
+    parsedData = querystring.parse(data);
+    userName = parsedData.username;
+    password = parsedData.password;
+    queries.getStoredPassword(userName, (err, res) => {
+      if (err) console.log(err);
       else {
-        console.log('hashed password is',res[0].hashed_password);
-        storedPassword=res[0].hashed_password;
-        helper.hashPassword(password, (err, inputPassword) => {
+        console.log("hashed password from the DB is", res[0].hashed_password);
+        storedPassword = res[0].hashed_password;
+        //helper.hashPassword(password, (err, inputPassword) => {
+        console.log("storedPassword before comparing", storedPassword);
+        helper.comparePasswords(password, storedPassword, (err, res) => {
           if (err) console.log(err);
-          else {
-            console.log('storedPassword before comparing',storedPassword);
-            helper.comparePasswords(inputPassword, storedPassword, (err, res) => {
-            if (err) console.log(err);
-            else if (res) {
-              console.log(`Login successful!`);
-              response.writeHead(302, { Location: "/inventory" });
-              response.end();
-              } else {
-              console.log(`Login unsuccessful!`);
-              response.writeHead(302, { Location: "/" });
-              response.end(res);
-             }
-            });
-           }
-          });
-        }
-       });
-     });
-     response.end();
-  };
-
+          else if (res) {
+            console.log(`Login successful!`);
+            response.writeHead(301, { Location: "public/inventory.html" });
+            response.end();
+          } else {
+            console.log(`Login unsuccessful!`);
+            response.writeHead(302, { Location: "/" });
+            response.end(res);
+          }
+        });
+      }
+    });
+  });
+};
 
 const handleBuyItem = (request, response) => {
   const itemToBuy = request.url.split("?")[1];
