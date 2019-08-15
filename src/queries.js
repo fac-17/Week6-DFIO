@@ -25,14 +25,17 @@ const checkExistingUsers = (requestedName, cb) => {
 };
 
 const getStoredPassword = (userName, cb) => {
-  databaseConnection.query(`SELECT hashed_password FROM users WHERE name = '${userName}'`, (err, res) => {
-    if (err) {
-      cb(err);
-    } else {
-      cb(null, res.rows);
+  databaseConnection.query(
+    `SELECT hashed_password FROM users WHERE name = '${userName}'`,
+    (err, res) => {
+      if (err) {
+        cb(err);
+      } else {
+        cb(null, res.rows);
+      }
     }
-  });
-}
+  );
+};
 
 const getUsers = cb => {
   databaseConnection.query("SELECT * FROM users ORDER BY id", (err, res) => {
@@ -158,13 +161,15 @@ const getAllScores = cb => {
 };
 
 const checkEnoughGold = (userName, itemName, cb) => {
+  decodedItemName = decodeURI(itemName);
   databaseConnection.query(
-    `SELECT (SELECT gold_pieces FROM users WHERE name = 'herm') - (SELECT item_price FROM inventory WHERE inventory.item_name = 'Cape')`,
+    `SELECT (SELECT gold_pieces FROM users WHERE name = '${userName}') - (SELECT item_price FROM inventory WHERE inventory.item_name = '${decodedItemName}')`,
     (err, res) => {
       if (err) cb(err);
       else {
-        console.log('check enough gold ' + res.rows);
-        cb(null, res.rows);
+        const valueDiff = res.rows[0]["?column?"];
+        const enoughGold = valueDiff >= 0 ? true : false;
+        cb(null, enoughGold);
       }
     }
   );
