@@ -144,18 +144,27 @@ const handleRequestSatchel = (request, response) => {
     response.end(itemsOwned);
   });
 };
+
 const handleBuyItem = (request, response) => {
   const itemToBuy = request.url.split("?")[1];
-  console.log("userName in handleBuyItem", userName);
-  queries.buyItem(userName, itemToBuy, (err, itemsOwned) => {
+  let enoughGold;
+  queries.checkEnoughGold(userName, itemToBuy, (err, res) => {
     if (err) console.log(err);
-    queries.getItemsOwnedBy(userName, (err, itemsOwned) => {
-      if (err) console.log(err);
-      itemsOwned = JSON.stringify(itemsOwned);
-      // console.log(itemsOwned);
-      response.writeHead(200, { "Content-Type": "application/json" });
-      response.end(itemsOwned);
-    });
+    else enoughGold = res;
+    if (enoughGold) {
+      queries.buyItem(userName, itemToBuy, (err, itemsOwned) => {
+        if (err) console.log(err);
+        queries.getItemsOwnedBy(userName, (err, itemsOwned) => {
+          if (err) console.log(err);
+          itemsOwned = JSON.stringify(itemsOwned);
+          response.writeHead(200, { "Content-Type": "application/json" });
+          response.end(itemsOwned);
+        });
+      });
+    } else {
+      response.writeHead(200, { "Content-Type": "text/plain" });
+      response.end(enoughGold);
+    }
   });
 };
 
