@@ -1,10 +1,10 @@
-const logoutButton = document.querySelector('.logout');
+const logoutButton = document.querySelector(".logout");
 
 const logout = () => {
   document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  window.location.pathname = '/';
-}
-logoutButton.addEventListener('click', logout);
+  window.location.pathname = "/";
+};
+logoutButton.addEventListener("click", logout);
 
 const getInventoryData = () => {
   const xhr = new XMLHttpRequest();
@@ -34,29 +34,40 @@ const getUserData = () => {
 
 const requestSatchel = () => {
   const xhr = new XMLHttpRequest();
-  const url = `/requestsatchel`
+  const url = `/requestsatchel`;
   xhr.onreadystatechange = () => {
-    if (xhr.readyState === 4 && xhr.status === 200 ) {
+    if (xhr.readyState === 4 && xhr.status === 200) {
       const satchel = JSON.parse(xhr.responseText);
       populateSatchel(satchel);
     }
-  }
-xhr.open('GET', url)
-xhr.send()
+  };
+  xhr.open("GET", url);
+  xhr.send();
 };
 
 getInventoryData();
 getUserData();
 requestSatchel();
 
-
-
 const populateInventoryTable = arr => {
-  const inventoryTable = document.querySelector(".inventory_table");
+  const inventoryTable = document.querySelector(
+    ".inventory_table tr:nth-child(1)"
+  );
+  console.log("inventory table first child: ", inventoryTable.firstChild);
+  console.log(inventoryTable);
+
   while (inventoryTable.firstChild) {
     inventoryTable.firstChild.remove();
   }
-  arr.forEach(item => {
+  console.log({ arr });
+
+  arr.unshift({
+    item_name: "Item Name",
+    item_price: "Price (GP)",
+    item_quantity: "Number In Stock"
+  });
+
+  arr.forEach((item, index) => {
     let newItem = document.createElement("tr");
     // Item details filled in
     let newItemName = document.createElement("th");
@@ -69,11 +80,13 @@ const populateInventoryTable = arr => {
     newItemPrice.innerText = item.item_price;
     newItem.appendChild(newItemPrice);
     // Button added
-    let newItemButton = document.createElement("button");
-    newItemButton.innerText = "Buy now";
-    newItemButton.classList.add("buy-now");
-    newItemButton.setAttribute("onclick", `buyItem('${item.item_name}')`);
-    newItem.appendChild(newItemButton);
+    if (index > 0) {
+      let newItemButton = document.createElement("button");
+      newItemButton.innerText = "Buy now";
+      newItemButton.classList.add("buy-now");
+      newItemButton.setAttribute("onclick", `buyItem('${item.item_name}')`);
+      newItem.appendChild(newItemButton);
+    }
     // Full new row added
     inventoryTable.appendChild(newItem);
   });
@@ -108,6 +121,13 @@ const populateSatchel = arr => {
   while (satchelTable.firstChild) {
     satchelTable.firstChild.remove();
   }
+
+  arr.unshift({
+    item_name: "Item Name",
+    item_description: "Description",
+    item_power: "Power"
+  });
+
   console.log(JSON.stringify(satchelTable));
   arr.forEach(item => {
     let newItem = document.createElement("tr");
@@ -125,7 +145,6 @@ const populateSatchel = arr => {
     satchelTable.appendChild(newItem);
   });
 };
-
 
 // const request = (url,cb) => {
 //   const xhr = new XMLHttpRequest();
