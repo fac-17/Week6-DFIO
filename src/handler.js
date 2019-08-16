@@ -4,11 +4,9 @@ const querystring = require("querystring");
 const helper = require("./helper");
 const queries = require("./queries");
 let userName;
-// let password = "oneTwoOneTwo";
 
 const handleHome = (request, response) => {
   const filePath = path.join(__dirname, "..", "public", "index.html");
-  // FOR TESTS - temp
   fs.readFile(filePath, (err, file) => {
     if (err) {
       response.writeHead(500, { "content-type": "text/html" });
@@ -19,7 +17,6 @@ const handleHome = (request, response) => {
         response.writeHead(302, { Location: "/public/inventory.html" });
         response.end(file);
       }
-
       response.writeHead(200, { "content-type": "text/html" });
       response.end(file);
     }
@@ -27,7 +24,6 @@ const handleHome = (request, response) => {
 };
 
 const handlePublic = (request, response) => {
-  console.log(`You are in handlePublic`);
   const extension = path.extname(request.url).substring(1);
   const extensionType = {
     html: "text/html",
@@ -36,7 +32,6 @@ const handlePublic = (request, response) => {
     ico: "image/x-icon"
   };
   const filePath = path.join(__dirname, "..", request.url);
-  console.log(filePath);
 
   if (
     filePath.includes(`/public/inventory.html`) &&
@@ -62,8 +57,6 @@ const handleDbNewUser = (request, response) => {
     parsedData = querystring.parse(data);
     userName = parsedData.username;
     password = parsedData.password;
-    console.log("username in handleDbNewUser", userName);
-    console.log("password in handleDbNewUser", password);
 
     queries.checkExistingUsers(userName, (err, res) => {
       if (err) console.log(err);
@@ -121,7 +114,7 @@ const handleDbLogin = (request, response) => {
             const jwt = helper.createCookie(userName);
             response.writeHead(302, {
               Location: "/public/inventory.html",
-              "Set-Cookie": `jwt=${jwt}; Max-Age=9000` // NEED TO BE TESTED ONCE LOGIN ROUTE WORKS
+              "Set-Cookie": `jwt=${jwt}; Max-Age=9000`
             });
             response.end();
           } else {
@@ -139,7 +132,6 @@ const handleRequestSatchel = (request, response) => {
   queries.getItemsOwnedBy(userName, (err, itemsOwned) => {
     if (err) console.log(err);
     itemsOwned = JSON.stringify(itemsOwned);
-    // console.log(itemsOwned);
     response.writeHead(200, { "Content-Type": "application/json" });
     response.end(itemsOwned);
   });
@@ -170,7 +162,6 @@ const handleBuyItem = (request, response) => {
 
 const handleGetUser = (request, response) => {
   queries.getUserData(userName, (err, res) => {
-    // console.log('username in getUser',userName);
     if (err) console.log(err);
     userData = JSON.stringify(res);
     response.writeHead(200, { "Content-Type": "application/json" });
