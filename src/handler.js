@@ -57,9 +57,6 @@ const handleDbNewUser = (request, response) => {
     parsedData = querystring.parse(data);
     userName = parsedData.username;
     password = parsedData.password;
-    // helper.backendValidation(userName, password); - Function to be finalised
-    console.log("username in handleDbNewUser", userName);
-    console.log("password in handleDbNewUser", password);
 
     queries.checkExistingUsers(userName, (err, res) => {
       if (err) console.log(err);
@@ -67,11 +64,10 @@ const handleDbNewUser = (request, response) => {
         if (res.length > 0) {
           // user DOES exist – so need to pick other name (set front end alert)
           userExists = "True";
-          response.writeHead(302,
-            {
-              Location: "/",
-              'Set-Cookie': `user=exists; Max-Age=3`
-            });
+          response.writeHead(302, {
+            Location: "/",
+            "Set-Cookie": `user=exists; Max-Age=3`
+          });
           response.end(userExists);
         } else if (res.length === 0) {
           // user DOESN'T exist – so CREATE USER (hash pw and set cookie)
@@ -103,16 +99,16 @@ const handleGetInventory = (request, response) => {
 };
 
 const handleGetLeaderboard = (request, response) => {
-  queries.getAllScores((err,res) => {
-    if(err) console.log(err);
-    else{
-      const leaderboardArray = JSON.stringify(res)
-      console.log({leaderboardArray});
-      response.writeHead(200, {'Content-Type':'application/json'});
+  queries.getAllScores((err, res) => {
+    if (err) console.log(err);
+    else {
+      const leaderboardArray = JSON.stringify(res);
+      console.log({ leaderboardArray });
+      response.writeHead(200, { "Content-Type": "application/json" });
       response.end(leaderboardArray);
     }
-  })
-}
+  });
+};
 const handleDbLogin = (request, response) => {
   let loginSuccesful;
   let storedPassword = "";
@@ -127,7 +123,6 @@ const handleDbLogin = (request, response) => {
         helper.comparePasswords(password, storedPassword, (err, res) => {
           if (err) console.log(err);
           else if (res) {
-            console.log(`Login successful!`);
             const jwt = helper.createCookie(userName);
             response.writeHead(302, {
               Location: "/public/inventory.html",
@@ -136,11 +131,10 @@ const handleDbLogin = (request, response) => {
             response.end();
           } else {
             console.log(`Login unsuccessful!`);
-            response.writeHead(302,
-              {
-                Location:'/',
-                'Set-Cookie': `password=wrong; Max-Age=3`
-              });
+            response.writeHead(302, {
+              Location: "/",
+              "Set-Cookie": `password=wrong; Max-Age=3`
+            });
             response.end(res);
           }
         });
@@ -161,18 +155,28 @@ const handleRequestSatchel = (request, response) => {
 const handleBuyItem = (request, response) => {
   const itemToBuy = request.url.split("?")[1];
   let enoughGold;
-  queries.checkEnoughGold(userName, itemToBuy, (err, res) => {
+  let inStock;
+  queries.checkInStock(itemToBuy, (err, res) => {
     if (err) console.log(err);
-    else enoughGold = res;
-    if (enoughGold) {
-      queries.buyItem(userName, itemToBuy, (err, itemsOwned) => {
+    else inStock = res;
+    if (inStock) {
+      queries.checkEnoughGold(userName, itemToBuy, (err, res) => {
         if (err) console.log(err);
-        queries.getItemsOwnedBy(userName, (err, itemsOwned) => {
-          if (err) console.log(err);
-          itemsOwned = JSON.stringify(itemsOwned);
-          response.writeHead(200, { "Content-Type": "application/json" });
-          response.end(itemsOwned);
-        });
+        else enoughGold = res;
+        if (enoughGold) {
+          queries.buyItem(userName, itemToBuy, (err, itemsOwned) => {
+            if (err) console.log(err);
+            queries.getItemsOwnedBy(userName, (err, itemsOwned) => {
+              if (err) console.log(err);
+              itemsOwned = JSON.stringify(itemsOwned);
+              response.writeHead(200, { "Content-Type": "application/json" });
+              response.end(itemsOwned);
+            });
+          });
+        } else {
+          response.writeHead(200, { "Content-Type": "text/plain" });
+          response.end(enoughGold);
+        }
       });
     } else {
       response.writeHead(200, { "Content-Type": "text/plain" });

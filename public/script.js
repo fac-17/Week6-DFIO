@@ -6,7 +6,6 @@ const logout = () => {
 };
 logoutButton.addEventListener("click", logout);
 
-
 const getInventoryData = () => {
   const xhr = new XMLHttpRequest();
   const url = "/getinventory";
@@ -51,15 +50,12 @@ getUserData();
 requestSatchel();
 
 const populateInventoryTable = arr => {
-  const inventoryTable = document.querySelector(
-    ".inventory_table tbody"
-  );
-  console.log(inventoryTable);
+  const inventoryTable = document.querySelector(".inventory_table tbody");
 
   while (inventoryTable.children.length > 1) {
-        inventoryTable.removeChild(inventoryTable.lastChild);
-    }
-  console.log({ arr });
+    inventoryTable.removeChild(inventoryTable.lastChild);
+  }
+
   arr.forEach((item, index) => {
     let newItem = document.createElement("tr");
     // Item details filled in
@@ -106,11 +102,10 @@ const buyItem = itemName => {
 };
 
 const populateSatchel = arr => {
-  console.log("purchase arr: ", arr);
   const satchelTable = document.querySelector(".satchel_table tbody");
   while (satchelTable.children.length > 1) {
-        satchelTable.removeChild(satchelTable.lastChild);
-    }
+    satchelTable.removeChild(satchelTable.lastChild);
+  }
   arr.forEach(item => {
     let newItem = document.createElement("tr");
     // Item details filled in
