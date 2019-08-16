@@ -6,6 +6,7 @@ const logout = () => {
 };
 logoutButton.addEventListener("click", logout);
 
+
 const getInventoryData = () => {
   const xhr = new XMLHttpRequest();
   const url = "/getinventory";
