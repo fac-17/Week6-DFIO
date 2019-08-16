@@ -1,8 +1,16 @@
-console.log('hello');
+
 const newUsernameField = document.querySelector('#new-username');
 const newPasswordField = document.querySelector('#new-password');
 const loginUsernameField = document.querySelector('#login-username');
 const loginPasswordField = document.querySelector('#login-password');
+
+if (document.cookie === 'user=exists') {
+  alert("Sorry, this name is already taken")
+} else if (document.cookie === 'password=wrong') {
+  alert("Yikes, wrong password")
+}
+
+
 
 newUsernameField.addEventListener('input', (e) => {
    newUsernameField.setCustomValidity('');
