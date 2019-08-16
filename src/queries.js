@@ -144,13 +144,14 @@ const getScoreByUser = (userId, cb) => {
 
 const getAllScores = cb => {
   databaseConnection.query(
-    `SELECT users.name, SUM(inventory.item_power)
+    `SELECT row_number() OVER() as position,users.name, SUM(inventory.item_power) AS total_power
     FROM users
     INNER JOIN ownership
     ON users.id = ownership.owner_id
     INNER JOIN inventory
     ON inventory.id = ownership.item_id
-    GROUP BY users.id`,
+    GROUP BY users.id
+    ORDER BY total_power DESC`,
     (err, res) => {
       if (err) cb(err);
       else {

@@ -103,6 +103,17 @@ const handleGetInventory = (request, response) => {
   });
 };
 
+const handleGetLeaderboard = (request, response) => {
+  queries.getAllScores((err,res) => {
+    if(err) console.log(err);
+    else{
+      const leaderboardArray = JSON.stringify(res)
+      console.log({leaderboardArray});
+      response.writeHead(200, {'Content-Type':'application/json'});
+      response.end(leaderboardArray);
+    }
+  })
+}
 const handleDbLogin = (request, response) => {
   let loginSuccesful;
   let storedPassword = "";
@@ -183,6 +194,7 @@ module.exports = {
   handlePublic,
   handleDbNewUser,
   handleGetInventory,
+  handleGetLeaderboard,
   handleDbLogin,
   handleGetUser,
   handleRequestSatchel,
