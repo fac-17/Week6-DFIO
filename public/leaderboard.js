@@ -24,6 +24,11 @@ const populateLeaderboardTable = arr => {
   arr.forEach((item, index) => {
     let newItem = document.createElement("tr");
     // Item details filled in
+    let newItemPosition = document.createElement("td");
+    newItemPosition.classList.add('leaderboard-cell');
+    newItemPosition.innerText = item.position;
+    newItem.appendChild(newItemPosition);
+    
     let newItemName = document.createElement("td");
     newItemName.classList.add('leaderboard-cell');
     newItemName.innerText = item.name;
