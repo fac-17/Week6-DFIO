@@ -1,25 +1,24 @@
-const http = require("http");
 const handlers = require("./handler");
-const path = require("path");
-const fs = require("fs");
-let userName='Jon';
+
 const router = (request, response) => {
   const endpoint = request.url;
   if (endpoint === "/") {
     handlers.handleHome(request, response);
-  } else if (endpoint.includes('public')) {
+  } else if (endpoint.includes("public")) {
     handlers.handlePublic(request, response);
-  } else if (endpoint.includes('/newuser')) {
+  } else if (endpoint.includes("/newuser")) {
     handlers.handleDbNewUser(request, response);
-  } else if (endpoint.includes('/login')) {
+  } else if (endpoint.includes("/login")) {
     handlers.handleDbLogin(request, response);
-  } else if (endpoint.includes('/getinventory')) {
+  } else if (endpoint.includes("/getinventory")) {
     handlers.handleGetInventory(request, response);
+  } else if (endpoint.includes('/getleaderboard')){
+    handlers.handleGetLeaderboard(request, response);
   } else if (endpoint.includes('/requestsatchel')) {
     handlers.handleRequestSatchel(request, response);
-  } else if (endpoint.includes('/buyitem')) {
+  } else if (endpoint.includes("/buyitem")) {
     handlers.handleBuyItem(request, response);
-  } else if (endpoint.includes('/getuser')) {
+  } else if (endpoint.includes("/getuser")) {
     handlers.handleGetUser(request, response);
   } else {
     response.writeHead(404);

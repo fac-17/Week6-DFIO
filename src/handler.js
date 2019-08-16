@@ -4,11 +4,9 @@ const querystring = require("querystring");
 const helper = require("./helper");
 const queries = require("./queries");
 let userName;
-// let password = "oneTwoOneTwo";
 
 const handleHome = (request, response) => {
   const filePath = path.join(__dirname, "..", "public", "index.html");
-  // FOR TESTS - temp
   fs.readFile(filePath, (err, file) => {
     if (err) {
       response.writeHead(500, { "content-type": "text/html" });
@@ -19,7 +17,6 @@ const handleHome = (request, response) => {
         response.writeHead(302, { Location: "/public/inventory.html" });
         response.end(file);
       }
-
       response.writeHead(200, { "content-type": "text/html" });
       response.end(file);
     }
@@ -27,7 +24,6 @@ const handleHome = (request, response) => {
 };
 
 const handlePublic = (request, response) => {
-  console.log(`You are in handlePublic`);
   const extension = path.extname(request.url).substring(1);
   const extensionType = {
     html: "text/html",
@@ -36,7 +32,6 @@ const handlePublic = (request, response) => {
     ico: "image/x-icon"
   };
   const filePath = path.join(__dirname, "..", request.url);
-  console.log(filePath);
 
   if (
     filePath.includes(`/public/inventory.html`) &&
@@ -69,8 +64,10 @@ const handleDbNewUser = (request, response) => {
         if (res.length > 0) {
           // user DOES exist – so need to pick other name (set front end alert)
           userExists = "True";
-
-          response.writeHead(302, { Location: "/" });
+          response.writeHead(302, {
+            Location: "/",
+            "Set-Cookie": `user=exists; Max-Age=3`
+          });
           response.end(userExists);
         } else if (res.length === 0) {
           // user DOESN'T exist – so CREATE USER (hash pw and set cookie)
@@ -101,6 +98,17 @@ const handleGetInventory = (request, response) => {
   });
 };
 
+const handleGetLeaderboard = (request, response) => {
+  queries.getAllScores((err, res) => {
+    if (err) console.log(err);
+    else {
+      const leaderboardArray = JSON.stringify(res);
+      console.log({ leaderboardArray });
+      response.writeHead(200, { "Content-Type": "application/json" });
+      response.end(leaderboardArray);
+    }
+  });
+};
 const handleDbLogin = (request, response) => {
   let loginSuccesful;
   let storedPassword = "";
@@ -118,11 +126,15 @@ const handleDbLogin = (request, response) => {
             const jwt = helper.createCookie(userName);
             response.writeHead(302, {
               Location: "/public/inventory.html",
-              "Set-Cookie": `jwt=${jwt}; Max-Age=9000` // NEED TO BE TESTED ONCE LOGIN ROUTE WORKS
+              "Set-Cookie": `jwt=${jwt}; Max-Age=9000`
             });
             response.end();
           } else {
-            response.writeHead(302, { Location: "/" });
+            console.log(`Login unsuccessful!`);
+            response.writeHead(302, {
+              Location: "/",
+              "Set-Cookie": `password=wrong; Max-Age=3`
+            });
             response.end(res);
           }
         });
@@ -135,7 +147,6 @@ const handleRequestSatchel = (request, response) => {
   queries.getItemsOwnedBy(userName, (err, itemsOwned) => {
     if (err) console.log(err);
     itemsOwned = JSON.stringify(itemsOwned);
-
     response.writeHead(200, { "Content-Type": "application/json" });
     response.end(itemsOwned);
   });
@@ -188,6 +199,7 @@ module.exports = {
   handlePublic,
   handleDbNewUser,
   handleGetInventory,
+  handleGetLeaderboard,
   handleDbLogin,
   handleGetUser,
   handleRequestSatchel,

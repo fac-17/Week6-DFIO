@@ -50,43 +50,29 @@ getUserData();
 requestSatchel();
 
 const populateInventoryTable = arr => {
-  const inventoryTable = document.querySelector(
-    ".inventory_table tr:nth-child(1)"
-  );
-  console.log("inventory table first child: ", inventoryTable.firstChild);
-  console.log(inventoryTable);
+  const inventoryTable = document.querySelector(".inventory_table tbody");
 
-  while (inventoryTable.firstChild) {
-    inventoryTable.firstChild.remove();
+  while (inventoryTable.children.length > 1) {
+    inventoryTable.removeChild(inventoryTable.lastChild);
   }
-  console.log({ arr });
-
-  arr.unshift({
-    item_name: "Item Name",
-    item_price: "Price (GP)",
-    item_quantity: "Number In Stock"
-  });
 
   arr.forEach((item, index) => {
     let newItem = document.createElement("tr");
     // Item details filled in
-    let newItemName = document.createElement("th");
+    let newItemName = document.createElement("td");
     newItemName.innerText = item.item_name;
     newItem.appendChild(newItemName);
-    let newItemQuantity = document.createElement("th");
+    let newItemQuantity = document.createElement("td");
     newItemQuantity.innerText = item.item_quantity;
     newItem.appendChild(newItemQuantity);
-    let newItemPrice = document.createElement("th");
+    let newItemPrice = document.createElement("td");
     newItemPrice.innerText = item.item_price;
     newItem.appendChild(newItemPrice);
-    // Button added
-    if (index > 0) {
-      let newItemButton = document.createElement("button");
-      newItemButton.innerText = "Buy now";
-      newItemButton.classList.add("buy-now");
-      newItemButton.setAttribute("onclick", `buyItem('${item.item_name}')`);
-      newItem.appendChild(newItemButton);
-    }
+    let newItemButton = document.createElement("button");
+    newItemButton.innerText = "Buy now";
+    newItemButton.classList.add("buy-now");
+    newItemButton.setAttribute("onclick", `buyItem('${item.item_name}')`);
+    newItem.appendChild(newItemButton);
     // Full new row added
     inventoryTable.appendChild(newItem);
   });
@@ -116,29 +102,20 @@ const buyItem = itemName => {
 };
 
 const populateSatchel = arr => {
-  console.log("purchase arr: ", arr);
-  const satchelTable = document.querySelector(".satchel_table");
-  while (satchelTable.firstChild) {
-    satchelTable.firstChild.remove();
+  const satchelTable = document.querySelector(".satchel_table tbody");
+  while (satchelTable.children.length > 1) {
+    satchelTable.removeChild(satchelTable.lastChild);
   }
-
-  arr.unshift({
-    item_name: "Item Name",
-    item_description: "Description",
-    item_power: "Power"
-  });
-
-  console.log(JSON.stringify(satchelTable));
   arr.forEach(item => {
     let newItem = document.createElement("tr");
     // Item details filled in
-    let newItemName = document.createElement("th");
+    let newItemName = document.createElement("td");
     newItemName.innerText = item.item_name;
     newItem.appendChild(newItemName);
-    let newItemDescription = document.createElement("th");
+    let newItemDescription = document.createElement("td");
     newItemDescription.innerText = item.item_description;
     newItem.appendChild(newItemDescription);
-    let newItemPower = document.createElement("th");
+    let newItemPower = document.createElement("td");
     newItemPower.innerText = item.item_power;
     newItem.appendChild(newItemPower);
     // Full new row added
