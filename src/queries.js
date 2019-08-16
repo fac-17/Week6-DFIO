@@ -119,13 +119,6 @@ const buyItem = (user_name, item_name, cb) => {
   });
 };
 
-// UPDATE users SET gold_pieces = gold_pieces - 1 WHERE name = {1};
-//       UPDATE inventory
-//       SET item_quantity = item_quantity - 1
-//       WHERE item_name = {2};
-//       INSERT INTO ownership(owner_id, item_id)
-//       VALUES ((SELECT id FROM users WHERE name = {1}), (SELECT id FROM inventory WHERE item_name = {2}));
-
 const getScoreByUser = (userId, cb) => {
   databaseConnection.query(
     `SELECT SUM(item_power)
