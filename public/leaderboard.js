@@ -26,7 +26,7 @@ const populateLeaderboardTable = arr => {
     // Item details filled in
     let newItemPosition = document.createElement("td");
     newItemPosition.classList.add('leaderboard-cell');
-    newItemPosition.innerText = item.position;
+    newItemPosition.innerText = index +1;
     newItem.appendChild(newItemPosition);
     
     let newItemName = document.createElement("td");
