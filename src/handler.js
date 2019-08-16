@@ -62,8 +62,6 @@ const handleDbNewUser = (request, response) => {
     parsedData = querystring.parse(data);
     userName = parsedData.username;
     password = parsedData.password;
-    console.log("username in handleDbNewUser", userName);
-    console.log("password in handleDbNewUser", password);
 
     queries.checkExistingUsers(userName, (err, res) => {
       if (err) console.log(err);
@@ -71,7 +69,7 @@ const handleDbNewUser = (request, response) => {
         if (res.length > 0) {
           // user DOES exist – so need to pick other name (set front end alert)
           userExists = "True";
-          console.log(`Does the user exist?`, userExists);
+
           response.writeHead(302, { Location: "/" });
           response.end(userExists);
         } else if (res.length === 0) {
@@ -117,7 +115,7 @@ const handleDbLogin = (request, response) => {
         helper.comparePasswords(password, storedPassword, (err, res) => {
           if (err) console.log(err);
           else if (res) {
-            console.log(`Login successful!`);
+
             const jwt = helper.createCookie(userName);
             response.writeHead(302, {
               Location: "/public/inventory.html",
@@ -125,7 +123,7 @@ const handleDbLogin = (request, response) => {
             });
             response.end();
           } else {
-            console.log(`Login unsuccessful!`);
+
             response.writeHead(302, { Location: "/" });
             response.end(res);
           }
@@ -139,7 +137,7 @@ const handleRequestSatchel = (request, response) => {
   queries.getItemsOwnedBy(userName, (err, itemsOwned) => {
     if (err) console.log(err);
     itemsOwned = JSON.stringify(itemsOwned);
-    // console.log(itemsOwned);
+
     response.writeHead(200, { "Content-Type": "application/json" });
     response.end(itemsOwned);
   });
@@ -148,11 +146,19 @@ const handleRequestSatchel = (request, response) => {
 const handleBuyItem = (request, response) => {
   const itemToBuy = request.url.split("?")[1];
   let enoughGold;
+  queries.checkInStockPromise(itemToBuy).then((res) => {
+    console.log('checkinstockproimse: ' + res);
+  }).catch((err) => {
+    console.log(err);
+  })
+  // 1 check item in stock 
+  // 2 check enoug money
+  // 3 buy item
+  // 4 return items
 
   queries.checkInStock(itemToBuy, (err, res) => {
     if (err) console.log(err);
     else {
-      console.log(res);
     }
   });
 
@@ -178,7 +184,6 @@ const handleBuyItem = (request, response) => {
 
 const handleGetUser = (request, response) => {
   queries.getUserData(userName, (err, res) => {
-    // console.log('username in getUser',userName);
     if (err) console.log(err);
     userData = JSON.stringify(res);
     response.writeHead(200, { "Content-Type": "application/json" });

@@ -175,6 +175,23 @@ const checkEnoughGold = (userName, itemName, cb) => {
   );
 };
 
+const checkInStockPromise = itemName => { 
+  return new Promise((resolve, reject) => {
+    decodedItemName = decodeURI(itemName);
+    databaseConnection.query(
+      `SELECT item_quantity from inventory WHERE inventory.item_name = '${decodedItemName}'`,
+      (err, res) => {
+          const stockLevel = res.rows[0].item_quantity;
+          const enoughStock = stockLevel > 0 ? true : false;
+          try {resolve(enoughStock)}
+          catch (err) {
+            reject(err)
+          }
+      }
+    );
+  })
+}
+
 const checkInStock = (itemName, cb) => {
   decodedItemName = decodeURI(itemName);
   databaseConnection.query(
@@ -191,6 +208,7 @@ const checkInStock = (itemName, cb) => {
 };
 
 module.exports = {
+  checkInStockPromise,
   getUsers,
   getItemsOwnedBy,
   getInventory,
