@@ -7,7 +7,7 @@ body{
   background-color: #523A34;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   font-family: 'Metamorphous', cursive;
 }
@@ -15,6 +15,7 @@ body{
 h1{
   font-size: 2rem;
   color: #f4be53;
+  text-align: center;
 }
 .form{
   width: 90vw;
@@ -38,6 +39,22 @@ width: 100%;
   max-width: 50%;
   border: 2px solid #f4be53;
   border-radius: 0.5rem;
+  color: #f4be53;
+  background-color: #523A34;
+}
+
+.leaderboard-table{
+  border-collapse: collapse;
+  height: 40vh;
+  overflow: scroll;
+}
+.leaderboard-cell{
+  font-size: 1rem;
+  padding: 0.5rem;
+  margin: 0.5rem;
+  font-family: 'Metamorphous', cursive;
+  max-width: 50%;
+  border: 2px solid #f4be53;
   color: #f4be53;
   background-color: #523A34;
 }

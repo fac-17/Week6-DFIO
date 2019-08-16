@@ -119,13 +119,6 @@ const buyItem = (user_name, item_name, cb) => {
   });
 };
 
-// UPDATE users SET gold_pieces = gold_pieces - 1 WHERE name = {1};
-//       UPDATE inventory
-//       SET item_quantity = item_quantity - 1
-//       WHERE item_name = {2};
-//       INSERT INTO ownership(owner_id, item_id)
-//       VALUES ((SELECT id FROM users WHERE name = {1}), (SELECT id FROM inventory WHERE item_name = {2}));
-
 const getScoreByUser = (userId, cb) => {
   databaseConnection.query(
     `SELECT SUM(item_power)
@@ -144,13 +137,14 @@ const getScoreByUser = (userId, cb) => {
 
 const getAllScores = cb => {
   databaseConnection.query(
-    `SELECT users.name, SUM(inventory.item_power)
+    `SELECT row_number() OVER() as position,users.name, SUM(inventory.item_power) AS total_power
     FROM users
     INNER JOIN ownership
     ON users.id = ownership.owner_id
     INNER JOIN inventory
     ON inventory.id = ownership.item_id
-    GROUP BY users.id`,
+    GROUP BY users.id
+    ORDER BY total_power DESC`,
     (err, res) => {
       if (err) cb(err);
       else {
