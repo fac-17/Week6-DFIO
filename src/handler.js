@@ -154,6 +154,15 @@ const handleRequestSatchel = (request, response) => {
 
 const handleBuyItem = (request, response) => {
   const itemToBuy = request.url.split("?")[1];
+  queries.checkInStockPromise(itemToBuy)
+  .then(inStock => {
+      queries.checkEnoughGoldPromise(userName, itemToBuy)
+  .then(enoughGold => {
+      console.log('checkinstock: ', inStock, ' enough gold: ', enoughGold);
+    })
+  })
+
+  
   let enoughGold;
   let inStock;
   queries.checkInStock(itemToBuy, (err, res) => {
