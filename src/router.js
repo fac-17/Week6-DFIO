@@ -12,7 +12,9 @@ const router = (request, response) => {
     handlers.handleDbLogin(request, response);
   } else if (endpoint.includes("/getinventory")) {
     handlers.handleGetInventory(request, response);
-  } else if (endpoint.includes("/requestsatchel")) {
+  } else if (endpoint.includes('/getleaderboard')){
+    handlers.handleGetLeaderboard(request, response);
+  } else if (endpoint.includes('/requestsatchel')) {
     handlers.handleRequestSatchel(request, response);
   } else if (endpoint.includes("/buyitem")) {
     handlers.handleBuyItem(request, response);
