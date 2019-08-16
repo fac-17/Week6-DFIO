@@ -57,6 +57,9 @@ const handleDbNewUser = (request, response) => {
     parsedData = querystring.parse(data);
     userName = parsedData.username;
     password = parsedData.password;
+    // helper.backendValidation(userName, password); - Function to be finalised
+    console.log("username in handleDbNewUser", userName);
+    console.log("password in handleDbNewUser", password);
 
     queries.checkExistingUsers(userName, (err, res) => {
       if (err) console.log(err);
@@ -64,8 +67,11 @@ const handleDbNewUser = (request, response) => {
         if (res.length > 0) {
           // user DOES exist – so need to pick other name (set front end alert)
           userExists = "True";
-          console.log(`Does the user exist?`, userExists);
-          response.writeHead(302, { Location: "/" });
+          response.writeHead(302,
+            {
+              Location: "/",
+              'Set-Cookie': `user=exists; Max-Age=3`
+            });
           response.end(userExists);
         } else if (res.length === 0) {
           // user DOESN'T exist – so CREATE USER (hash pw and set cookie)
@@ -130,7 +136,11 @@ const handleDbLogin = (request, response) => {
             response.end();
           } else {
             console.log(`Login unsuccessful!`);
-            response.writeHead(302, { Location: "/" });
+            response.writeHead(302,
+              {
+                Location:'/',
+                'Set-Cookie': `password=wrong; Max-Age=3`
+              });
             response.end(res);
           }
         });
