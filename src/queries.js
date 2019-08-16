@@ -175,6 +175,21 @@ const checkEnoughGold = (userName, itemName, cb) => {
   );
 };
 
+const checkInStock = (itemName, cb) => {
+  decodedItemName = decodeURI(itemName);
+  databaseConnection.query(
+    `SELECT item_quantity from inventory WHERE inventory.item_name = '${decodedItemName}'`,
+    (err, res) => {
+      if (err) cb(err);
+      else {
+        const stockLevel = res.rows[0].item_quantity;
+        const enoughStock = stockLevel > 0 ? true : false;
+        cb(null, enoughStock);
+      }
+    }
+  );
+};
+
 module.exports = {
   getUsers,
   getItemsOwnedBy,
@@ -187,5 +202,6 @@ module.exports = {
   getUserData,
   checkExistingUsers,
   getStoredPassword,
-  checkEnoughGold
+  checkEnoughGold,
+  checkInStock
 };
