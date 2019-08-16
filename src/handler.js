@@ -115,7 +115,6 @@ const handleDbLogin = (request, response) => {
         helper.comparePasswords(password, storedPassword, (err, res) => {
           if (err) console.log(err);
           else if (res) {
-
             const jwt = helper.createCookie(userName);
             response.writeHead(302, {
               Location: "/public/inventory.html",
@@ -123,7 +122,6 @@ const handleDbLogin = (request, response) => {
             });
             response.end();
           } else {
-
             response.writeHead(302, { Location: "/" });
             response.end(res);
           }
@@ -146,34 +144,28 @@ const handleRequestSatchel = (request, response) => {
 const handleBuyItem = (request, response) => {
   const itemToBuy = request.url.split("?")[1];
   let enoughGold;
-  queries.checkInStockPromise(itemToBuy).then((res) => {
-    console.log('checkinstockproimse: ' + res);
-  }).catch((err) => {
-    console.log(err);
-  })
-  // 1 check item in stock 
-  // 2 check enoug money
-  // 3 buy item
-  // 4 return items
-
+  let inStock;
   queries.checkInStock(itemToBuy, (err, res) => {
     if (err) console.log(err);
-    else {
-    }
-  });
-
-  queries.checkEnoughGold(userName, itemToBuy, (err, res) => {
-    if (err) console.log(err);
-    else enoughGold = res;
-    if (enoughGold) {
-      queries.buyItem(userName, itemToBuy, (err, itemsOwned) => {
+    else inStock = res;
+    if (inStock) {
+      queries.checkEnoughGold(userName, itemToBuy, (err, res) => {
         if (err) console.log(err);
-        queries.getItemsOwnedBy(userName, (err, itemsOwned) => {
-          if (err) console.log(err);
-          itemsOwned = JSON.stringify(itemsOwned);
-          response.writeHead(200, { "Content-Type": "application/json" });
-          response.end(itemsOwned);
-        });
+        else enoughGold = res;
+        if (enoughGold) {
+          queries.buyItem(userName, itemToBuy, (err, itemsOwned) => {
+            if (err) console.log(err);
+            queries.getItemsOwnedBy(userName, (err, itemsOwned) => {
+              if (err) console.log(err);
+              itemsOwned = JSON.stringify(itemsOwned);
+              response.writeHead(200, { "Content-Type": "application/json" });
+              response.end(itemsOwned);
+            });
+          });
+        } else {
+          response.writeHead(200, { "Content-Type": "text/plain" });
+          response.end(enoughGold);
+        }
       });
     } else {
       response.writeHead(200, { "Content-Type": "text/plain" });

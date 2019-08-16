@@ -175,27 +175,10 @@ const checkEnoughGold = (userName, itemName, cb) => {
   );
 };
 
-const checkInStockPromise = itemName => { 
-  return new Promise((resolve, reject) => {
-    decodedItemName = decodeURI(itemName);
-    databaseConnection.query(
-      `SELECT item_quantity from inventory WHERE inventory.item_name = '${decodedItemName}'`,
-      (err, res) => {
-          const stockLevel = res.rows[0].item_quantity;
-          const enoughStock = stockLevel > 0 ? true : false;
-          try {resolve(enoughStock)}
-          catch (err) {
-            reject(err)
-          }
-      }
-    );
-  })
-}
-
 const checkInStock = (itemName, cb) => {
   decodedItemName = decodeURI(itemName);
   databaseConnection.query(
-    `SELECT item_quantity from inventory WHERE inventory.item_name = '${decodedItemName}'`,
+    `SELECT item_quantity FROM inventory WHERE item_name = '${decodedItemName}'`,
     (err, res) => {
       if (err) cb(err);
       else {
@@ -207,8 +190,43 @@ const checkInStock = (itemName, cb) => {
   );
 };
 
+// const checkEnoughGoldPromise = (userName, itemName) => {
+//   return new Promise((resolve, reject) => {
+//     decodedItemName = decodeURI(itemName);
+//     databaseConnection.query(
+//       `SELECT (SELECT gold_pieces FROM users WHERE name = '${userName}') - (SELECT item_price FROM inventory WHERE inventory.item_name = '${decodedItemName}')`,
+//       (err, res) => {
+//         const valueDiff = res.rows[0]["?column?"];
+//         const enoughGold = valueDiff >= 0 ? true : false;
+//         try {
+//           resolve(enoughGold);
+//         } catch (err) {
+//           reject(err);
+//         }
+//       }
+//     );
+//   });
+// };
+
+// const checkInStockPromise = itemName => {
+//   return new Promise((resolve, reject) => {
+//     decodedItemName = decodeURI(itemName);
+//     databaseConnection.query(
+//       `SELECT item_quantity from inventory WHERE inventory.item_name = '${decodedItemName}'`,
+//       (err, res) => {
+//         const stockLevel = res.rows[0].item_quantity;
+//         const enoughStock = stockLevel > 0 ? true : false;
+//         try {
+//           resolve(enoughStock);
+//         } catch (err) {
+//           reject(err);
+//         }
+//       }
+//     );
+//   });
+// };
+
 module.exports = {
-  checkInStockPromise,
   getUsers,
   getItemsOwnedBy,
   getInventory,
