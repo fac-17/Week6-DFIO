@@ -62,6 +62,7 @@ const handleDbNewUser = (request, response) => {
     parsedData = querystring.parse(data);
     userName = parsedData.username;
     password = parsedData.password;
+    // helper.backendValidation(userName, password); - Function to be finalised
     console.log("username in handleDbNewUser", userName);
     console.log("password in handleDbNewUser", password);
 

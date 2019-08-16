@@ -66,4 +66,20 @@ const checkCookie = (rawCookie) => {
   });
 }
 
-module.exports = { dataStreamer, hashPassword, comparePasswords, createCookie, checkCookie };
+const backendValidation = (user, pw) => {
+  let userRegex = RegExp("[a-z0-9]+");
+  let pwRegex = RegExp("^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).{6,30}$");
+
+  if (!userRegex.test(user)) {console.log('Backend username validation fails')}
+  if (!pwRegex.test(user)) {console.log('Backend password validation fails')}
+
+  if (userRegex.test(user) && pwRegex.test(pw)) {
+    //console.log("Backend validation passes (helper.js)");
+    return true;
+  } else {
+    //console.log("Backend validation FAILS (helper.js)");
+    return false;
+  }
+}
+
+module.exports = { dataStreamer, hashPassword, comparePasswords, createCookie, checkCookie, backendValidation };
