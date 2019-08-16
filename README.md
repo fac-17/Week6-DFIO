@@ -109,15 +109,15 @@ Installation
 
 
 ### Stretch Goals
-- [ ] Not allow items to be bought when not enough gold
-    - [ ] Call back end when item is bought with user gold
-    - [ ] Function called checkEnoughGold(item name, username)
-    - [ ] Check DB with checkEnoughGold to deterine if user can buy item (return True/False)
-    - [ ] If true, buy item
-    - [ ] If false, response.end(Can't buy item)
+- [x] Not allow items to be bought when not enough gold
+    - [x] Call back end when item is bought with user gold
+    - [x] Function called checkEnoughGold(item name, username)
+    - [x] Check DB with checkEnoughGold to deterine if user can buy item (return True/False)
+    - [x] If true, buy item
+    - [x] If false, response.end(Can't buy item)
     - [ ] Promise > checkEnoughGold (Error > Break) > Buy Item 
 - [ ] Different permissions  (user, admin that can POST new items)
-- [ ] Leaderboard
+- [x] Leaderboard
 - [ ] Generate secure secret key
 
 
